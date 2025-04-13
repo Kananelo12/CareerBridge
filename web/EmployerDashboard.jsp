@@ -4,6 +4,8 @@
     Author     : kanan
 --%>
 
+<%@page import="java.util.Map"%>
+<%@page import="dao.ApplicationDAO"%>
 <%@page import="model.Internship"%>
 <%@page import="model.Company"%>
 <%@page import="dao.InternshipDAO"%>
@@ -31,9 +33,9 @@
             }
         }
     }
-    
+
     Connection conn = ConnectionFile.getConn();
-    
+
     Company company = (Company) session.getAttribute("company");
     int companyId = company.getCompanyId();
 
@@ -46,6 +48,9 @@
     List<Internship> internships = internshipDAO.getInternshipsByCompanyId(companyId);
     request.setAttribute("internships", internships);
 
+    List<Map<String, Object>> applications = new ApplicationDAO(conn).getApplicationsByCompanyId(companyId);
+    request.setAttribute("applications", applications);
+
     String messageClass = "";
     if (request.getAttribute("error") != null || request.getAttribute("success") != null) {
         messageClass = "active";
@@ -55,7 +60,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="viewport" content="width=device-width, intial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Employer Dashboard | Career Bridge</title>
 
         <!-- ======= CSS Styles ======= -->
@@ -240,9 +245,9 @@
                     </div>
                 </section>
                 <section class="section hidden" id="applicationSection">
-<!--                    <div class="card-dark card-w-100" style="margin: 0 1rem 1.5rem 1rem;">
-                        <a href="#" class="internship-btn">Post Internship</a>
-                    </div>-->
+                    <!--                    <div class="card-dark card-w-100" style="margin: 0 1rem 1.5rem 1rem;">
+                                            <a href="#" class="internship-btn">Post Internship</a>
+                                        </div>-->
 
                     <div class="container">
                         <h2 class="table-title">Manage Applications</h2>
@@ -261,25 +266,24 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="internship" items="${internships}">
+                                    <c:forEach var="row" items="${applications}">
+                                        <c:set var="app" value="${row.application}" />
                                         <tr>
-                                            <td>${internship.internshipId}</td>
-                                            <td>${company.companyName}</td>
-                                            <td>${internship.category}</td>
-                                            <td>${internship.location}</td>
-                                            <td>${internship.postedDate}</td>
-                                            <td>${internship.requirements}</td>
-                                            <td>INTERN NAME</td>
-                                            <td class="badge">${internship.status}</td>
+                                            <td>${app.applicationId}</td>
+                                            <td>${row.studentName}</td>
+                                            <td>${row.companyName}</td>
+                                            <td><a href="${app.cvUrl}" target="_blank">View CV</a></td>
+                                            <td><a href="${app.transcriptUrl}" target="_blank">View Transcript</a></td>
+                                            <td>${app.applicationDate}</td>
+                                            <td class="badge">${app.status}</td>
                                             <td class="actions">
-                                                <a href="editInternship.jsp?id=${internship.internshipId}" class="btn edit-btn">Edit</a>
-                                                <a href="deleteInternship?id=${internship.internshipId}" class="btn delete-btn" 
-                                                   onclick="return confirm('Are you sure you want to delete this internship?');">
-                                                    Delete
-                                                </a>
+                                                <a href="editApplication.jsp?id=${app.applicationId}" class="btn edit-btn">Accept</a>
+                                                <a href="deleteApplication?id=${app.applicationId}" class="btn delete-btn"
+                                                   onclick="return confirm('Are you sure you want to delete this application?');">Reject</a>
                                             </td>
                                         </tr>
                                     </c:forEach>
+
                                 </tbody>
                             </table>
                         </div>

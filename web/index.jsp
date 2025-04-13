@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
     String savedTheme = "";
     Cookie[] cookies = request.getCookies();
@@ -15,6 +16,11 @@
                 break;
             }
         }
+    }
+
+    String messageClass = "";
+    if (request.getAttribute("error") != null || request.getAttribute("success") != null) {
+        messageClass = "active";
     }
 %>
 <!DOCTYPE html>
@@ -46,6 +52,33 @@
             <i class="fas fa-moon"></i>
             <i class="fas fa-sun"></i>
         </a>
+
+        <!-- ======= Message Box ======= -->
+        <div class="message__wrapper <%=messageClass%>">
+            <div class="message__box">
+                <div class="close__msg__btn flex">
+                    <i class="fas fa-close"></i>
+                </div>
+                <div class="message">
+                    <% if (request.getAttribute("error") != null) {%>
+                    <div class="alert-danger">
+                        <%= request.getAttribute("error")%>
+                    </div>
+                    <c:if test="${error eq 'The provided email already exist.'}">
+                        <div class="login">
+                            <a href="./login.jsp">Login</a>
+                        </div>
+                    </c:if>
+                    <% } %>
+                    <% if (request.getAttribute("success") != null) {%>
+                    <div class="alert-success">
+                        <%= request.getAttribute("success")%>
+                    </div>
+                    <% }%>
+                </div>
+            </div>
+        </div>
+
         <%@include file="./nav-files/header.jsp"%>
         <main>
             <section class="hero">
@@ -171,17 +204,68 @@
                             <p class="copy">Explore our exclusive selection of top-tier internships—unique opportunities designed to shape future professionals.</p>
                             <a href="internship.jsp">View More <i class="fas fa-circle-chevron-right"></i></a>
                         </div>
-                        
+
                         <%@include file="./nav-files/internshipCards.jsp" %>
                     </div>
                 </div>
             </section>
         </main>
         <%@include file="./nav-files/footer.jsp"%>
+
+        <!--=======Application Modal =======-->
+        <div class="modal__overlay flex" id="application-modal">
+            <div class="modal application__modal" style="max-width: 600px;">
+                <form action="ApplicationServlet" method="POST" class="global-form" enctype="multipart/form-data">
+                    <div class="modal__title flex" style="margin-bottom: 1.3rem;">
+                        <h3 class="form-title">Apply for Internship</h3>
+                        <div class="close__modal__btn flex">
+                            <i class="fas fa-close"></i>
+                        </div>
+                    </div>
+                    <div class="modal__body">
+                        <!-- Hidden field: internship_id (should be set dynamically, e.g., via JS or server-side) -->
+                        <input type="hidden" name="internship_id" id="internship_id" value="${internshipCard.internshipId}" />
+
+                        <div class="input-group">
+                            <label for="cv" class="form-label">Upload Your CV</label>
+                            <input type="file" name="cv" id="cv" class="form-control" accept=".pdf,.doc,.docx" required />
+                        </div>
+                        <div class="input-group">
+                            <label for="transcript" class="form-label">Upload Your Transcript (PDF)</label>
+                            <input type="file" name="transcript" id="transcript" class="form-control" accept=".pdf" required />
+                        </div>
+                        <button type="submit" class="globalBtn submit-application">
+                            Apply Now
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+                        
+        <script src="./assets/js/utilities.js"></script>
         <script src="./assets/js/index.js"></script>
         <script>
+            const internshipIdInput = document.getElementById('internship_id');
+            
             const internshipGridTitle = document.querySelector(".card__title");
             internshipGridTitle.classList.add("hidden");
+            const applyButtons = document.querySelectorAll(".grid__btn");
+            const applicationModal = document.getElementById("application-modal");
+            applyButtons.forEach((appBtn) => {
+                appBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const internshipId = appBtn.getAttribute('data-id');
+                    internshipIdInput.value = internshipId;
+                    applicationModal.classList.add("active");
+                });
+            });
+            // hide the modal overlay
+            const modal = document.querySelector(".modal__overlay");
+            const closeModalBtn = document.querySelector(".close__modal__btn");
+            closeModalBtn.addEventListener("click", () => {
+                modal.classList.remove("active");
+            });
         </script>
     </body>
 </html>

@@ -186,7 +186,9 @@ public class InternshipDAO {
 
     public List<Internship> getInternshipsByCompanyId(int companyId) throws SQLException {
         List<Internship> internships = new ArrayList<>();
-        String sql = "SELECT * FROM internship WHERE company_id = ?";
+        String sql = "SELECT i.*, c.company_name, c.logo_url FROM internship i "
+                + "JOIN company c ON i.company_id = c.company_id"
+                + " WHERE i.company_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, companyId);
             try (ResultSet rs = stmt.executeQuery()) {

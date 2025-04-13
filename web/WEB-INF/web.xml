@@ -24,6 +24,10 @@
         <servlet-name>EditInternshipServlet</servlet-name>
         <servlet-class>controller.EditInternshipServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ApplicationServlet</servlet-name>
+        <servlet-class>controller.ApplicationServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -48,4 +52,14 @@
         <servlet-name>EditInternshipServlet</servlet-name>
         <url-pattern>/EditInternshipServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ApplicationServlet</servlet-name>
+        <url-pattern>/ApplicationServlet</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Custom 404 Page-->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/notFound.jsp</location>
+    </error-page>
 </web-app>

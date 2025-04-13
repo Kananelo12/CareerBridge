@@ -36,21 +36,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const toggleBtn = document.querySelector('.sidebar__operations .icon');
     const toggleIcon = document.querySelector('.sidebar__operations .icon i');
 
-    toggleBtn.addEventListener('click', () => {
-        sidebarContainer.classList.toggle('collapsed');
-        // Optionally toggle an 'open' class for mobile
-        sidebarContainer.classList.toggle('open');
+    if (toggleBtn) { // Make sure toggleBtn is not null
+        toggleBtn.addEventListener('click', () => {
+            sidebarContainer.classList.toggle('collapsed');
+            // Optionally toggle an 'open' class for mobile
+            sidebarContainer.classList.toggle('open');
 
-        if (sidebarContainer.classList.contains('collapsed')) {
-            // when collapsed, show the bar icon
-            toggleIcon.classList.remove('fa-xmark');
-            toggleIcon.classList.add('fa-bars');
-        } else {
-            // when expanded, show the xmark icon
-            toggleIcon.classList.remove('fa-bars');
-            toggleIcon.classList.add('fa-xmark');
-        }
-    });
+            if (sidebarContainer.classList.contains('collapsed')) {
+                // when collapsed, show the bar icon
+                toggleIcon.classList.remove('fa-xmark');
+                toggleIcon.classList.add('fa-bars');
+            } else {
+                // when expanded, show the xmark icon
+                toggleIcon.classList.remove('fa-bars');
+                toggleIcon.classList.add('fa-xmark');
+            }
+        });
+    } else {
+        console.error("toggleBtn is null. Check that the element with the selector '.sidebar__operations .icon' exists in your HTML.");
+    }
 
     // remove active on message box
     const closeMsgBtn = document.querySelector(".close__msg__btn");

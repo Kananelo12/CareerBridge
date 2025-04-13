@@ -63,7 +63,7 @@
                                     <img src="./assets/images/tailwind.png" alt="Tech-Stack Logo" />
                                 </div>
                             </div>
-                            <a href="" class="grid__btn">Apply</a>
+                            <a href="" class="grid__btn" data-id="${internshipCard.internshipId}">Apply</a>
                         </div>
                     </div>
                 </div>
