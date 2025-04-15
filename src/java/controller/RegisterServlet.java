@@ -35,22 +35,22 @@ import utils.ConnectionFile;
 
 public class RegisterServlet extends HttpServlet {
 
-    // directory paths
-    private static final String IMAGE_DIRECTORY = "C:" + File.separator + "Users" + File.separator
-            + "kanan" + File.separator + "Documents" + File.separator + "NetBeansProjects" + File.separator
-            + "2230541_Internship_System" + File.separator + "web" + File.separator + "uploads" + File.separator + "images";
-    private static final String DOCS_DIRECTORY = "C:" + File.separator + "Users" + File.separator
-            + "kanan" + File.separator + "Documents" + File.separator + "NetBeansProjects" + File.separator
-            + "2230541_Internship_System" + File.separator + "web" + File.separator + "uploads" + File.separator + "documents";
+    String IMAGE_DIRECTORY;
+    String DOCS_DIRECTORY;
 
     // Database connection variable
     private Connection conn;
 
     @Override
-    public void init() {
+    public void init() throws ServletException {
+        // Set relative paths for images and documents
+        IMAGE_DIRECTORY = getServletContext().getRealPath("/uploads/images");
+        DOCS_DIRECTORY = getServletContext().getRealPath("/uploads/documents");
+
         try {
             conn = ConnectionFile.getConn();
-            System.out.println("Directory: " + IMAGE_DIRECTORY);
+            System.out.println("Image Directory: " + IMAGE_DIRECTORY);
+            System.out.println("Documentary Directory: " + DOCS_DIRECTORY);
         } catch (Exception ex) {
             System.out.println("Connection Failed: " + ex.getMessage());
         }
@@ -228,7 +228,7 @@ public class RegisterServlet extends HttpServlet {
                 logoFilePart.write(logoPath);
                 dbLogoPath = "uploads/images/" + uniqueLogoName;
             }
-            
+
             // get the document file and upload the path
             if (documentFilePart != null && documentFilePart.getSize() > 0) {
                 String docName = Paths.get(documentFilePart.getSubmittedFileName()).getFileName().toString();
@@ -257,7 +257,7 @@ public class RegisterServlet extends HttpServlet {
             company.setLogoUrl(dbLogoPath);
             company.setLocation(location);
             company.setContactInfo(contactInfo);
-            
+
             document = new Document();
             document.setDocumentType(documentType);
             document.setDocumentUrl(dbDocPath);

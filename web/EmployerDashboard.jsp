@@ -245,10 +245,6 @@
                     </div>
                 </section>
                 <section class="section hidden" id="applicationSection">
-                    <!--                    <div class="card-dark card-w-100" style="margin: 0 1rem 1.5rem 1rem;">
-                                            <a href="#" class="internship-btn">Post Internship</a>
-                                        </div>-->
-
                     <div class="container">
                         <h2 class="table-title">Manage Applications</h2>
                         <div class="responsive-table">
@@ -277,9 +273,9 @@
                                             <td>${app.applicationDate}</td>
                                             <td class="badge">${app.status}</td>
                                             <td class="actions">
-                                                <a href="editApplication.jsp?id=${app.applicationId}" class="btn edit-btn">Accept</a>
-                                                <a href="deleteApplication?id=${app.applicationId}" class="btn delete-btn"
-                                                   onclick="return confirm('Are you sure you want to delete this application?');">Reject</a>
+                                                <a href="ApplicationServlet?action=accept&appId=${app.applicationId}&studId=${app.studentId}&internshipId=${app.internshipId}" class="btn edit-btn">Accept</a>
+                                                <a href="ApplicationServlet?action=reject&appId=${app.applicationId}&studId=${app.studentId}&internshipId=${app.internshipId}" class="btn delete-btn"
+                                                   onclick="return confirm('Are you sure you want to reject this application?');">Reject</a>
                                             </td>
                                         </tr>
                                     </c:forEach>

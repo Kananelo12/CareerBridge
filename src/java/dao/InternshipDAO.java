@@ -31,13 +31,6 @@ public class InternshipDAO {
         this.conn = conn;
     }
 
-    /**
-     * Inserts a new internship into the database.
-     *
-     * @param internship the Internship object to insert.
-     * @return the generated internship ID.
-     * @throws SQLException if any SQL error occurs.
-     */
     public int insertInternship(Internship internship) throws SQLException {
         String query = "INSERT INTO internship (company_id, title, category, location, description, posted_date, requirements) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -64,12 +57,6 @@ public class InternshipDAO {
         return 0;
     }
 
-    /**
-     * Updates an existing internship record.
-     *
-     * @param internship the Internship object with updated values.
-     * @throws SQLException if any SQL error occurs.
-     */
     public void updateInternship(Internship internship) throws SQLException {
         String sql = "UPDATE internship SET company_id = ?, title = ?, location = ?, description = ?, posted_date = ?, requirements = ?, status = ? "
                 + "WHERE internship_id = ?";
@@ -85,13 +72,17 @@ public class InternshipDAO {
             stmt.executeUpdate();
         }
     }
+    
+    public void updateIntern(Internship internship) throws SQLException {
+        String sql = "UPDATE internship SET student_id = ? "
+                + "WHERE internship_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, internship.getStudentId());
+            pstmt.setInt(2, internship.getInternshipId());
+            pstmt.executeUpdate();
+        }
+    }
 
-    /**
-     * Deletes an internship record from the database.
-     *
-     * @param internshipId the ID of the internship to delete.
-     * @throws SQLException if any SQL error occurs.
-     */
     public void deleteInternship(int internshipId) throws SQLException {
         String sql = "DELETE FROM internship WHERE internship_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -100,13 +91,6 @@ public class InternshipDAO {
         }
     }
 
-    /**
-     * Helper method to map a ResultSet row to an Internship object.
-     *
-     * @param rs the ResultSet.
-     * @return an Internship object.
-     * @throws SQLException if any SQL error occurs.
-     */
     private Internship mapRowToInternship(ResultSet rs) throws SQLException {
         Internship internship = new Internship();
         internship.setInternshipId(rs.getInt("internship_id"));
@@ -136,15 +120,10 @@ public class InternshipDAO {
         return internship;
     }
 
-    /**
-     * Retrieves an internship by its ID.
-     *
-     * @param internshipId the ID of the internship.
-     * @return an Internship object or null if not found.
-     * @throws SQLException if any SQL error occurs.
-     */
     public Internship getInternshipById(int internshipId) throws SQLException {
-        String sql = "SELECT * FROM internship WHERE internship_id = ?";
+        String sql = "SELECT i.*, c.company_name, c.logo_url FROM internship i "
+                + "JOIN company c ON i.company_id = c.company_id "
+                + "WHERE internship_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, internshipId);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -156,14 +135,6 @@ public class InternshipDAO {
         return null;
     }
 
-    /**
-     * Retrieves a paginated list of internships.
-     *
-     * @param offset the starting index.
-     * @param limit the number of records to retrieve.
-     * @return a list of Internship objects.
-     * @throws SQLException if any SQL error occurs.
-     */
     public List<Internship> getInternships(int offset, int limit) throws SQLException {
         List<Internship> internships = new ArrayList<>();
         String sql = "SELECT i.*, c.company_name, c.logo_url "
@@ -171,7 +142,6 @@ public class InternshipDAO {
                 + "JOIN company c ON i.company_id = c.company_id "
                 + "ORDER BY i.posted_date DESC LIMIT ? OFFSET ?";
 
-//        String sql = "SELECT * FROM internship ORDER BY posted_date DESC LIMIT ? OFFSET ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, limit);
             stmt.setInt(2, offset);
@@ -202,7 +172,6 @@ public class InternshipDAO {
 
     public List<Internship> getInternshipsWithCompany(int offset, int limit) throws SQLException {
         List<Internship> internships = new ArrayList<>();
-        // Adjust field names and table names as needed.
         String sql = "SELECT i.*, c.company_id, c.company_name, c.logo_url "
                 + "FROM internship i "
                 + "JOIN company c ON i.company_id = c.company_id "

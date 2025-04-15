@@ -39,6 +39,16 @@ public class InternshipService {
     public void updateInternship(Internship internship) throws SQLException {
         internshipDAO.updateInternship(internship);
     }
+    
+    /**
+     * Updates an existing internship.
+     * 
+     * @param internship the Internship object with updated values.
+     * @throws SQLException if any SQL error occurs.
+     */
+    public void updateIntern(Internship internship) throws SQLException {
+        internshipDAO.updateIntern(internship);
+    }
 
     /**
      * Deletes an internship by its ID.

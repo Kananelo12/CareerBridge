@@ -21,6 +21,14 @@ public class StartupListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        
+        // set the absolute path to the .env file
+        String envFilePath = sce.getServletContext().getRealPath("/WEB-INF/config/.env");
+        // Setting it as a system property to be extracted when needed
+        System.setProperty("env.filepath", envFilePath);
+        System.out.println("Configured .env file path: " + envFilePath);
+        
+        // Seed database with admin user at app start up if no users exist
         try (Connection conn = ConnectionFile.getConn()) {
 
             // Seed database with roles

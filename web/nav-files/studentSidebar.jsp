@@ -50,7 +50,7 @@
                     <span class="nav__text">Internships</span>
                 </a>
             </li>
-            <li class="nav__item">
+            <li class="nav__item" id="application">
                 <a href="#" class="nav__link">
                     <span class="nav__icon"><i class="fab fa-intercom"></i></span>
                     <span class="nav__text">Application Tracker</span>

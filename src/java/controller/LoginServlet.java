@@ -106,8 +106,9 @@ public class LoginServlet extends HttpServlet {
                 }
                 // Generate OTP and send email
                 String otp = generateOTP();
-                final String senderEmail = "kananeloj12@gmail.com"; // Replace with your sender email
-                final String senderPassword = "yuok zbhi mhvv hcsv";   // Use App Password or secure credentials
+                final String senderEmail = "kananeloj12@gmail.com";
+                // Google App Password
+                final String senderPassword = "yuok zbhi mhvv hcsv";
 
                 Properties properties = new Properties();
                 properties.put("mail.smtp.auth", "true");

@@ -71,7 +71,6 @@ public class ApplicationDAO {
             stmt.setInt(2, application.getInternshipId());
             stmt.setString(3, application.getCvUrl());
             stmt.setString(4, application.getTranscriptUrl());
-            // If you want to update application_date (otherwise you can leave it out if it's auto set)
             stmt.setTimestamp(5, Timestamp.valueOf(application.getApplicationDate()));
             stmt.setString(6, application.getStatus());
             stmt.setInt(7, application.getApplicationId());
@@ -129,6 +128,46 @@ public class ApplicationDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     applications.add(mapRowToApplication(rs));
+                }
+            }
+        }
+        return applications;
+    }
+
+    public List<Map<String, Object>> getApplicationsByStudentId(int studentId) throws SQLException {
+        List<Map<String, Object>> applications = new ArrayList<>();
+
+        String sql = "SELECT a.*, "
+                + "CONCAT(u.firstName, ' ', u.lastName) AS student_name, "
+                + "a.cv_url, a.transcript_url, "
+                + "i.category, i.location, c.company_name "
+                + "FROM application a "
+                + "JOIN internship i ON a.internship_id = i.internship_id "
+                + "JOIN userdetails u ON a.student_id = u.user_id "
+                + "JOIN company c ON i.company_id = c.company_id "
+                + "WHERE a.student_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, studentId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> row = new HashMap<>();
+                    Application app = new Application();
+                    app.setApplicationId(rs.getInt("application_id"));
+                    app.setStudentId(rs.getInt("student_id"));
+                    app.setInternshipId(rs.getInt("internship_id"));
+                    app.setCvUrl(rs.getString("cv_url"));
+                    app.setTranscriptUrl(rs.getString("transcript_url"));
+                    app.setApplicationDate(rs.getTimestamp("application_date").toLocalDateTime());
+                    app.setStatus(rs.getString("status"));
+
+                    row.put("application", app);
+                    row.put("studentName", rs.getString("student_name"));
+                    row.put("companyName", rs.getString("company_name"));
+                    row.put("category", rs.getString("category"));
+                    row.put("location", rs.getString("location"));
+
+                    applications.add(row);
                 }
             }
         }

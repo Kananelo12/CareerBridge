@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dao.ApplicationDAO;
@@ -19,38 +15,121 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import javax.mail.MessagingException;
 import model.Application;
+import model.Internship;
 import model.User;
+import model.UserDetail;
+import service.ApplicationService;
+import service.InternshipService;
+import service.UserService;
 import utils.ConnectionFile;
+import utils.EmailUtil;
 
 /**
  *
  * @author kanan
  */
-
-
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 2,  // 2MB threshold before writing to disk
-    maxFileSize = 1024 * 1024 * 10,         // Max file size: 10MB
-    maxRequestSize = 1024 * 1024 * 50         // Max request size: 50MB
+        fileSizeThreshold = 1024 * 1024 * 2, // 2MB threshold before writing to disk
+        maxFileSize = 1024 * 1024 * 10, // Max file size: 10MB
+        maxRequestSize = 1024 * 1024 * 50 // Max request size: 50MB
 )
 
 public class ApplicationServlet extends HttpServlet {
 
     private Connection conn;
 
-    // directory path for uploaded files
-    private static final String STUDENT_DIRECTORY = "C:" + File.separator + "Users" + File.separator
-            + "kanan" + File.separator + "Documents" + File.separator + "NetBeansProjects" + File.separator
-            + "2230541_Internship_System" + File.separator + "web" + File.separator + "uploads" + File.separator + "studentdocs";
+    // directory path for student docs
+    private String STUDENT_DIRECTORY;
 
     @Override
     public void init() {
+        // Set relative paths for images and documents
+        STUDENT_DIRECTORY = getServletContext().getRealPath("/uploads/studentdocs");
+
         try {
             conn = ConnectionFile.getConn();
+            System.out.println("Student Directory: " + STUDENT_DIRECTORY);
         } catch (Exception ex) {
             System.err.println("Connection Failed: " + ex.getMessage());
         }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (conn == null) {
+            request.setAttribute("error", "Database connection failed. Try again!");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+            return;
+        }
+
+        User user = (User) request.getSession().getAttribute("user");
+
+        String studentIdParam = request.getParameter("studId");
+        String idParam = request.getParameter("appId");
+        if (idParam == null || idParam.isEmpty()) {
+            request.setAttribute("error", "No Application ID provided.");
+            response.sendRedirect("EmployerDashboard.jsp");
+            return;
+        }
+
+        String action = request.getParameter("action");
+        String internshipIdParam = request.getParameter("internshipId");
+
+        try {
+            int appId = Integer.parseInt(idParam);
+            int studentId = Integer.parseInt(studentIdParam);
+            int internshipId = Integer.parseInt(internshipIdParam);
+
+            // Get email of applicant
+            UserService userService = new UserService(conn);
+            UserDetail studeUser = userService.getUserDetails(studentId);
+
+            // Building the email params
+            String recipientEmail = studeUser.getEmail();
+            String subject = "Internship Application Follow Up";
+            String emailBody;
+
+            ApplicationService appService = new ApplicationService(conn);
+
+            // Get current application
+            Application app = appService.getApplicationById(appId);
+            if (app == null) {
+                request.setAttribute("error", "Application not found!");
+            } else {
+                if ("reject".equalsIgnoreCase(action)) {
+                    // Update status to "rejected"
+                    app.setStatus("rejected");
+                    request.setAttribute("error", "Application has been rejected!");
+                    emailBody = "Regratably, Your Application has been rejected!\n\nAutomated System\nApplication ID: " + appId + "\nCareerBridge";
+                } else {
+                    // Otherwise, update status to "rejected"
+                    InternshipService internService = new InternshipService(conn);
+                    Internship internship = new Internship();
+                    
+                    app.setStatus("accepted");
+                    
+                    // Update internships with accepted users
+                    internship.setStudentId(studentId);
+                    internship.setInternshipId(internshipId);
+                    
+                    internService.updateIntern(internship);
+                    request.setAttribute("success", "Application accepted successfully.");
+                    emailBody = "Congratulations, Your Application has been accepted.\nApplication ID: " + appId + "\n\nAutomated System\nCareerBridge";
+                }
+
+                appService.updateApplication(app);
+                EmailUtil.sendEmail(recipientEmail, subject, emailBody);
+
+            }
+        } catch (NumberFormatException | SQLException | MessagingException ex) {
+            request.setAttribute("error", "Failed to update application: " + ex.getMessage());
+        }
+
+        // Forward back to dashboard regardless of outcome
+        request.getRequestDispatcher("EmployerDashboard.jsp").forward(request, response);
     }
 
     @Override
@@ -91,7 +170,7 @@ public class ApplicationServlet extends HttpServlet {
 
         // for redirecting back to the page that made the request
         String referer = request.getHeader("Referer");
-        
+
         // Process CV upload (optional)
         Part cvPart = request.getPart("cv");
         if (cvPart != null && cvPart.getSize() > 0) {
@@ -150,24 +229,29 @@ public class ApplicationServlet extends HttpServlet {
             return;
         }
 
+        // Set application data
         Application application = new Application();
         application.setStudentId(user.getUserId());
         application.setInternshipId(internshipId);
         application.setCvUrl(cvUrl);
         application.setTranscriptUrl(transcriptUrl);
-        // application_date and status are set automatically in the database
-        // application.setApplicationDate(LocalDateTime.now());
-        // application.setStatus("pending");
+
+        // Building the email params
+        String recipientEmail = user.getEmail();
+        String subject = "Application for Internship";
+        String emailBody = "Your application has been sent.\nWe will be in touch\n\nAutomated System\nCareerBridge";
 
         try {
             ApplicationDAO applicationDAO = new ApplicationDAO(conn);
             int newApplicationId = applicationDAO.insertApplication(application);
 
             request.setAttribute("success", "Application submitted successfully with ID: " + newApplicationId);
-            request.getRequestDispatcher("index.jsp").forward(request, response);
-        } catch (ServletException | IOException | SQLException ex) {
+            request.getRequestDispatcher("StudentDashboard.jsp").forward(request, response);
+            // Send email to applicant
+            EmailUtil.sendEmail(recipientEmail, subject, emailBody);
+        } catch (ServletException | IOException | SQLException | MessagingException ex) {
             request.setAttribute("error", "Failed to submit application: " + ex.getMessage());
-            request.getRequestDispatcher("register.jsp").forward(request, response);
+            request.getRequestDispatcher("StudentDashboard.jsp").forward(request, response);
         }
     }
 

@@ -32,15 +32,17 @@ public class UserDetailDAO {
     }
 
     public UserDetail getUserDetailsByUserId(int userId) throws SQLException {
-        String query = "SELECT firstName, lastName, profileImageUrl FROM userdetails WHERE user_id = ?";
+        String query = "SELECT user_id, firstName, lastName, email, profileImageUrl FROM userdetails WHERE user_id = ?";
         PreparedStatement pstmt = conn.prepareStatement(query);
         pstmt.setInt(1, userId);
         ResultSet rs = pstmt.executeQuery();
         UserDetail userDetails = null;
         if (rs.next()) {
             userDetails = new UserDetail();
+            userDetails.setUserId(rs.getInt("user_id"));
             userDetails.setFirstName(rs.getString("firstName"));
             userDetails.setLastName(rs.getString("lastName"));
+            userDetails.setEmail(rs.getString("email"));
             userDetails.setProfileImageUrl(rs.getString("profileImageUrl"));
         }
         return userDetails;
