@@ -11,6 +11,7 @@ import model.UserDetail;
  * @author kanan
  */
 public class UserDetailDAO {
+
     private Connection conn;
 
     public UserDetailDAO(Connection conn) {
@@ -31,6 +32,20 @@ public class UserDetailDAO {
         ps.close();
     }
 
+    public void updateUserDetails(UserDetail details) throws SQLException {
+        String sql = "UPDATE userdetails SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, address = ?, profileImageUrl = ? WHERE user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, details.getFirstName());
+            stmt.setString(2, details.getLastName());
+            stmt.setString(3, details.getEmail());
+            stmt.setString(4, details.getPhoneNumber());
+            stmt.setString(5, details.getAddress());
+            stmt.setString(6, details.getProfileImageUrl());
+            stmt.setInt(7, details.getUserId());
+            stmt.executeUpdate();
+        }
+    }
+
     public UserDetail getUserDetailsByUserId(int userId) throws SQLException {
         String query = "SELECT user_id, firstName, lastName, email, profileImageUrl FROM userdetails WHERE user_id = ?";
         PreparedStatement pstmt = conn.prepareStatement(query);
@@ -47,7 +62,7 @@ public class UserDetailDAO {
         }
         return userDetails;
     }
-    
+
     public void updateCompanyId(int companyId, int userId) throws SQLException {
         String query = "UPDATE userdetails SET company_id = ? WHERE user_id = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -56,6 +71,5 @@ public class UserDetailDAO {
             pstmt.executeUpdate();
         }
     }
-    
-    
+
 }

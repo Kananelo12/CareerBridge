@@ -70,7 +70,7 @@
                 <a href="LogoutServlet" class="logout__btn flex"><i class="fas fa-arrow-right-from-bracket"></i></a>
             </div>
             <div class="app__version">
-                <h2 class="profile__title">LehaeConnect</h2>
+                <h2 class="profile__title">CareerBridge</h2>
                 <span class="profile__role">ver. 0.234</span>
             </div>
             <div class="more__settings flex">

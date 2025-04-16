@@ -232,13 +232,12 @@ li {
     position: absolute;
     top: 0;
     right: 0;
+    color: #333;
     font-size: 1.2rem;
     cursor: pointer;
     transition: color 300ms ease;
 }
-.close__msg__btn {
 
-}
 .close__msg__btn:hover {
     color: var(--accent-color-01);
 }
@@ -647,20 +646,15 @@ p.content-text {
 }
 .card-container.bento-grid {
     display: grid;
-    /* Use auto-fit to automatically fill as many columns as possible
-       with a minimum card width of 250px; the card will expand (to 1fr) as needed */
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;       /* space between cards */
-    padding: 1.5rem;   /* space around the grid */
-    /* Optional: give the whole container a background color */
-    background-color: var(--bg-focus-color);
-    /* Optional: set a minimum height so it looks balanced */
+    gap: 1.5rem;
+    padding: 1.5rem;
     min-height: 300px;
 }
 
 /* Style each card for that neat bento-box look */
 .card-container.bento-grid .card {
-    background-color: var(--bg-focus-color);
+    background-color: var(--gradient-bg);
     border-radius: 10px;
     padding: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -670,8 +664,8 @@ p.content-text {
 
 /* On hover, slightly scale the card for an interactive feel */
 .card-container.bento-grid .card:hover {
-    transform: scale(1.03);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transform: scale(1.001);
+    box-shadow: var(--shadow-custom);
 }
 
 .card-group {

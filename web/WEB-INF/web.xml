@@ -32,6 +32,10 @@
         <servlet-name>FeedbackServlet</servlet-name>
         <servlet-class>controller.FeedbackServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>EditUserServlet</servlet-name>
+        <servlet-class>controller.EditUserServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -64,8 +68,11 @@
         <servlet-name>FeedbackServlet</servlet-name>
         <url-pattern>/FeedbackServlet</url-pattern>
     </servlet-mapping>
-    
     <!-- Custom 404 Page-->
+    <servlet-mapping>
+        <servlet-name>EditUserServlet</servlet-name>
+        <url-pattern>/EditUserServlet</url-pattern>
+    </servlet-mapping>
     <error-page>
         <error-code>404</error-code>
         <location>/notFound.jsp</location>

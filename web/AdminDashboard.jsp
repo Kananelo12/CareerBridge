@@ -4,6 +4,9 @@
     Author     : kanan
 --%>
 
+<%@page import="model.Internship"%>
+<%@page import="dao.InternshipDAO"%>
+<%@page import="model.Company"%>
 <%@page import="utils.ConnectionFile"%>
 <%@page import="java.sql.Connection"%>
 <%@page import="java.util.List"%>
@@ -11,6 +14,8 @@
 <%@page import="dao.UserDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%
     // protecting sensitive pages
     if (session.getAttribute("user") == null) {
@@ -28,12 +33,42 @@
             }
         }
     }
-    
+
+    // Determine the current page from the request parameter
+    int currentPage = 1;
+    String pageParam = request.getParameter("page");
+    if (pageParam != null) {
+        try {
+            currentPage = Integer.parseInt(pageParam);
+        } catch (Exception ex) {
+            currentPage = 1;
+        }
+    }
+
     Connection conn = ConnectionFile.getConn();
-    
+
     UserDAO userDAO = new UserDAO(conn);
     List<User> allUsers = userDAO.getAllUsers();
     request.setAttribute("allUsers", allUsers);
+
+    // retrieve only interns (students with internships).
+    List<User> internUsers = userDAO.getInternUsers();
+    request.setAttribute("internUsers", internUsers);
+
+    // Offset the list from 0 and limit them to 6 items
+    int limit = 6;
+    int offset = (currentPage - 1) * limit;
+
+    InternshipDAO internshipDAO = new InternshipDAO(conn);
+    List<Internship> internships = internshipDAO.getInternships(offset, limit);
+    request.setAttribute("internships", internships);
+    request.setAttribute("currentPage", currentPage);
+    request.setAttribute("limit", limit);
+
+    String messageClass = "";
+    if (request.getAttribute("error") != null || request.getAttribute("success") != null) {
+        messageClass = "active";
+    }
 %>
 <!DOCTYPE html>
 <html>
@@ -56,175 +91,211 @@
         <link rel="manifest" href="./assets/images/favicon/site.webmanifest">
     </head>
     <body class="<%=savedTheme%>">
+        <!-- ======= Message Box ======= -->
+        <div class="message__wrapper <%=messageClass%>">
+            <div class="message__box">
+                <div class="close__msg__btn flex">
+                    <i class="fas fa-close"></i>
+                </div>
+                <div class="message">
+                    <% if (request.getAttribute("error") != null) {%>
+                    <div class="alert-danger">
+                        <%= request.getAttribute("error")%>
+                    </div>
+                    <c:if test="${error eq 'The provided email already exist.'}">
+                        <div class="login">
+                            <a href="./login.jsp">Login</a>
+                        </div>
+                    </c:if>
+                    <% } %>
+                    <% if (request.getAttribute("success") != null) {%>
+                    <div class="alert-success">
+                        <%= request.getAttribute("success")%>
+                    </div>
+                    <% }%>
+                </div>
+            </div>
+        </div>
+
+
         <main class="dashboard">
             <div class="dashboard-left-section" id="sidebarContainer">
                 <%@include file="./nav-files/sidebar.jsp" %>
             </div>
             <div class="dashboard-right-section">
-                <section class="section overview" id="overviewSection">
-                    <div class="card card-w-100 card-one">
-                        <div class="card-content flex__between">
-                            <div class="metric">
-                                <h3 class="card-title">Applications Submitted</h3>
-                                <h4 class="card-subtitle">546</h4>
-                                <div class="metric-badge flex__between">
-                                    <div class="trend flex">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </div>
-                                    <span class="">+33.45%</span>
-                                </div>
-                            </div>
-                            <div class="separator"></div>
-                            <div class="metric">
-                                <h3 class="card-title">Interviews Scheduled</h3>
-                                <h4 class="card-subtitle">546</h4>
-                                <div class="metric-badge flex__between">
-                                    <div class="trend flex">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </div>
-                                    <span class="">+33.45%</span>
-                                </div>
-                            </div>
-                            <div class="separator"></div>
-                            <div class="metric">
-                                <h3 class="card-title">My Listings</h3>
-                                <h4 class="card-subtitle">546</h4>
-                                <div class="metric-badge flex__between">
-                                    <div class="trend flex">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </div>
-                                    <span class="">+33.45%</span>
-                                </div>
-                            </div>
-                            <div class="separator"></div>
-                            <div class="metric">
-                                <h3 class="card-title">My Listings</h3>
-                                <h4 class="card-subtitle">546</h4>
-                                <div class="metric-badge flex__between">
-                                    <div class="trend flex">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </div>
-                                    <span class="">+33.45%</span>
-                                </div>
-                            </div>
+
+                <section class="section" id="overviewSection">
+                    <div class="card-w-100" style="padding: 1.5rem; border-radius: 12px;">
+                        <div class="content">
+                            <h2 class="dashboard-role">Welcome, ${user.roleName}</h2>
+                            <p class="content-text">Start your day with managing the system</p>
                         </div>
-                    </div>
-                    <div class="card-container bento-grid">
-                        <!-- Chart + Satisfaction + Webinars -->
-                        <div class="card-group flex__between">
-                            <!-- Audience Chart Card -->
-                            <div class="card card-chart">
-                                <h3 class="card-title">Audience</h3>
-                                <canvas id="statsChart"></canvas>
-                                <p class="metric-change">+58.31% for 7 last days</p>
-                            </div>
 
-                            <!-- Gauge/Satisfaction Card -->
-                            <div class="card card-gauge">
-                                <h3 class="card-title">Audience Satisfaction</h3>
-                                <div class="gauge-container">
-                                    <!-- You can use a radial progress plugin here -->
-                                    <span class="gauge-percentage">76.7%</span>
+                        <div class="card-container flex__between">
+                            <div class="card-item">
+                                <div class="item-title">
+                                    <img src="./assets/images/calendar-check.png" alt="Card Icon" />
+                                    <span>94</span>
                                 </div>
-                                <p class="gauge-note">Based on likes / dislikes</p>
+                                <p class="item-text">Total number of  scheduled appointments</p>
                             </div>
-
-                            <!-- Promo/Webinar Card -->
-                            <div class="card card-promo">
-                                <h3 class="card-title">Webinars</h3>
-                                <p class="promo-text">Learn how you can earn more than 20% each month!</p>
-                                <button class="btn-learn-more">Learn More</button>
+                            <div class="card-item">
+                                <div class="item-title">
+                                    <img src="./assets/images/hourglass.png" alt="Card Icon" />
+                                    <span>32</span>
+                                </div>
+                                <p class="item-text">Total number of  scheduled appointments</p>
+                            </div>
+                            <div class="card-item">
+                                <div class="item-title">
+                                    <img src="./assets/images/alert-triangle.png" alt="Card Icon" />
+                                    <span>56</span>
+                                </div>
+                                <p class="item-text">Total number of  scheduled appointments</p>
                             </div>
                         </div>
 
-                        <!--                        <div class="card card-w-flex card-one">
-                        
-                                                </div>-->
+                        <div class="card-container bento-grid">
+                            <div class="card-group flex__between">
+                                <div class="card card-chart">
+                                    <h3 class="card-title">Analytics</h3>
+                                    <canvas id="statsChart"></canvas>
+                                    <p class="metric-change">Companies</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
+
                 <section class="section hidden" id="usersSection">
-                    <div class="card card-w-100">
-                        <div class="container">
-                            <h2 class="table-title">Manage Users</h2>
-                            <div class="responsive-table">
-                                <table>
-                                    <thead>
+                    <div class="container">
+                        <h2 class="table-title">Manage Users</h2>
+                        <div class="responsive-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#ID</th>
+                                        <th>Full Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
+                                        <th class="actions">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="userRecord" items="${allUsers}">
                                         <tr>
-                                            <th>#ID</th>
-                                            <th>Full Name</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Phone</th>
-                                            <th>Address</th>
-                                            <th>Profile Image</th>
-                                            <th class="actions">Actions</th>
+                                            <td>${userRecord.userId}</td>
+                                            <c:choose>
+                                                <c:when test="${not empty userRecord.userDetails.profileImageUrl}">
+                                                    <td class="image-column">
+                                                        <div class="table-img-container">
+                                                            <img src="${userRecord.userDetails.profileImageUrl}" class="table-img" />
+                                                        </div> 
+                                                        ${userRecord.userDetails.firstName} ${userRecord.userDetails.lastName}
+                                                    </td>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="fName" value="${fn:toUpperCase(fn:substring(userRecord.userDetails.firstName, 0, 1))}" />
+                                                    <c:set var="lName" value="${fn:toUpperCase(fn:substring(userRecord.userDetails.lastName, 0, 1))}" />
+
+                                                    <td class="image-column">
+                                                        <div class="profile__initials">
+                                                            ${fName}${lName}
+                                                        </div> ${userRecord.userDetails.firstName} ${userRecord.userDetails.lastName}
+                                                    </td>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <td>${userRecord.userDetails.email}</td>
+                                            <td>${userRecord.roleName}</td>
+                                            <td>${userRecord.userDetails.phoneNumber}</td>
+                                            <td>${userRecord.userDetails.address}</td>
+                                            <td class="actions">
+                                                <a href="EditUserServlet?id=${userRecord.userId}" class="btn edit-btn">Edit</a>
+                                                <a href="EditUserServlet?action=delete&id=${userRecord.userId}" class="btn delete-btn" 
+                                                   onclick="return confirm('Are you sure you want to delete this user?');">
+                                                    Delete
+                                                </a>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:forEach var="userRecord" items="${allUsers}">
-                                            <tr>
-                                                <td>${userRecord.userId}</td>
-                                                <td>${userRecord.userDetails.firstName} ${userRecord.userDetails.lastName}</td>
-                                                <td>${userRecord.userDetails.email}</td>
-                                                <td>${userRecord.roleName}</td>
-                                                <td>${userRecord.userDetails.phoneNumber}</td>
-                                                <td>${userRecord.userDetails.address}</td>
-                                                <td>${userRecord.userDetails.profileImageUrl}</td>
-                                                <td class="actions">
-                                                    <a href="editUser.jsp?userId=${userRecord.userId}" class="btn edit-btn">Edit</a>
-                                                    <a href="deleteUser?userId=${userRecord.userId}" class="btn delete-btn" 
-                                                       onclick="return confirm('Are you sure you want to delete this user?');">
-                                                        Delete
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </c:forEach>
-                                    </tbody>
-                                </table>
-                            </div>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </section>
                 <section class="section hidden" id="internshipSection">
-                    <div class="card card-w-100">
-                        <div class="container">
-                            <h2 class="table-title">Internships</h2>
-                            <div class="responsive-table">
-                                <table>
-                                    <thead>
+                    <div class="container">
+                        <h2 class="table-title">Manage Internships</h2>
+                        <div class="responsive-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#ID</th>
+                                        <th>Company Name</th>
+                                        <th>Category</th>
+                                        <th>Location</th>
+                                        <th>Posted Date</th>
+                                        <th>Requirements</th>
+                                        <th>Taken By</th>
+                                        <th>Status</th>
+                                        <th class="actions">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="internship" items="${internships}">
                                         <tr>
-                                            <th>#ID</th>
-                                            <th>Full Name</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Phone</th>
-                                            <th>Address</th>
-                                            <th>Profile Image</th>
-                                            <th class="actions">Actions</th>
+                                            <td>${internship.internshipId}</td>
+                                            <td>${internship.company.companyName}</td>
+                                            <td>${internship.category}</td>
+                                            <td>${internship.location}</td>
+                                            <td>${internship.postedDate}</td>
+                                            <td>${internship.requirements}</td>
+                                            <td>${internship.studentId}</td>
+                                            <td class="badge">${internship.status}</td>
+                                            <td class="actions">
+                                                <a href="EditInternshipServlet?id=${internship.internshipId}" class="btn edit-btn">Edit</a>
+                                                <a href="EditInternshipServlet?action=delete&id=${internship.internshipId}" class="btn delete-btn" 
+                                                   onclick="return confirm('Are you sure you want to delete this internship?');">
+                                                    Delete
+                                                </a>
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        <c:forEach var="userRecord" items="${allUsers}">
-                                            <tr>
-                                                <td>${userRecord.userId}</td>
-                                                <td>${userRecord.userDetails.firstName} ${userRecord.userDetails.lastName}</td>
-                                                <td>${userRecord.userDetails.email}</td>
-                                                <td>${userRecord.roleName}</td>
-                                                <td>${userRecord.userDetails.phoneNumber}</td>
-                                                <td>${userRecord.userDetails.address}</td>
-                                                <td>${userRecord.userDetails.profileImageUrl}</td>
-                                                <td class="actions">
-                                                    <a href="editUser.jsp?userId=${userRecord.userId}" class="btn edit-btn">Edit</a>
-                                                    <a href="deleteUser?userId=${userRecord.userId}" class="btn delete-btn" 
-                                                       onclick="return confirm('Are you sure you want to delete this user?');">
-                                                        Delete
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </c:forEach>
-                                    </tbody>
-                                </table>
-                            </div>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="cards__pagination flex__between">
+                            <!-- Previous Button: Enabled only if currentPage > 1 -->
+                            <c:choose>
+                                <c:when test="${currentPage > 1}">
+                                    <a href="AdminDashboard.jsp?page=${currentPage - 1}" class="pagination__btn flex">
+                                        <i class="fas fa-arrow-left"></i>
+                                    </a>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="pagination__btn flex disabled">
+                                        <i class="fas fa-arrow-left"></i>
+                                    </span>
+                                </c:otherwise>
+                            </c:choose>
+
+                            <span class="page-number">Page ${currentPage}</span>
+
+                            <!-- Next Button: If the number of records fetched equals the limit, assume more pages -->
+                            <c:choose>
+                                <c:when test="${fn:length(internships) == limit}">
+                                    <a href="AdminDashboard.jsp?page=${currentPage + 1}" class="pagination__btn flex">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="pagination__btn flex disabled">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </span>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </section>

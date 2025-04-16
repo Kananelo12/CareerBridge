@@ -54,7 +54,6 @@ public class UserService {
             userDetailsDAO.insertUserDetails(details);
 
             // If the user is an employer and a document and company are provided,
-        
             if (user.getRoleId() == 2 && document != null && company != null) {
                 // insert into company and documents, then update user details with the company id.
                 // Insert company and get generated ID
@@ -84,6 +83,30 @@ public class UserService {
         return null;
     }
 
+    public void updateUser(User user, UserDetail details) throws SQLException {
+        conn.setAutoCommit(false);
+        try {
+            // Update the main user table
+            userDAO.updateUser(user);
+            // Update the additional user details table
+            userDetailsDAO.updateUserDetails(details);
+            conn.commit();
+        } catch (SQLException ex) {
+            conn.rollback();
+            throw ex;
+        } finally {
+            conn.setAutoCommit(true);
+        }
+    }
+
+    public void deleteUser(int userId) throws SQLException {
+        userDAO.deleteUser(userId);
+    }
+
+    public UserDetail getUserById(int userId) throws SQLException {
+        return userDAO.getUserById(userId);
+    }
+
     //
     public UserDetail getUserDetails(int userID) throws SQLException {
         return userDetailsDAO.getUserDetailsByUserId(userID);
@@ -93,7 +116,7 @@ public class UserService {
     public Document getDocument(int userId) throws SQLException {
         return documentDAO.getDocumentByUserId(userId);
     }
-    
+
     public Company getCompany(int userId) throws SQLException {
         return companyDAO.getCompanyByUserId(userId);
     }

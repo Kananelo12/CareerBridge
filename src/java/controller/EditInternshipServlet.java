@@ -50,9 +50,9 @@ public class EditInternshipServlet extends HttpServlet {
             response.sendRedirect("EmployerDashboard.jsp");
             return;
         }
-        
+
         String action = request.getParameter("action");
-        
+
         if ("delete".equalsIgnoreCase(action)) {
             try {
                 int internshipId = Integer.parseInt(idParam);
@@ -63,27 +63,27 @@ public class EditInternshipServlet extends HttpServlet {
             } catch (SQLException | NumberFormatException ex) {
                 request.setAttribute("error", "Failed to delete internship: " + ex.getMessage());
             }
-            
+
             // Forward back to dashboard regardless of outcome
             request.getRequestDispatcher("EmployerDashboard.jsp").forward(request, response);
         } else {
             try {
-            int internshipId = Integer.parseInt(idParam);
-            InternshipService internshipService = new InternshipService(conn);
-            Internship internship = internshipService.getInternshipById(internshipId);
-            if (internship == null) {
-                request.setAttribute("error", "Internship not found.");
-                request.getRequestDispatcher("EmployerDashboard.jsp").forward(request, response);
-                return;
-            }
+                int internshipId = Integer.parseInt(idParam);
+                InternshipService internshipService = new InternshipService(conn);
+                Internship internship = internshipService.getInternshipById(internshipId);
+                if (internship == null) {
+                    request.setAttribute("error", "Internship not found.");
+                    request.getRequestDispatcher("EmployerDashboard.jsp").forward(request, response);
+                    return;
+                }
 
-            request.setAttribute("internship", internship);
-            request.getRequestDispatcher("EditInternship.jsp").forward(request, response);
-        } catch (NumberFormatException | SQLException ex) {
-            ex.printStackTrace();
-            request.setAttribute("error", "Invalid internship ID or error fetching data: " + ex.getMessage());
-            request.getRequestDispatcher("EmployerDashboard.jsp").forward(request, response);
-        }
+                request.setAttribute("internship", internship);
+                request.getRequestDispatcher("EditInternship.jsp").forward(request, response);
+            } catch (NumberFormatException | SQLException ex) {
+                ex.printStackTrace();
+                request.setAttribute("error", "Invalid internship ID or error fetching data: " + ex.getMessage());
+                request.getRequestDispatcher("EmployerDashboard.jsp").forward(request, response);
+            }
         }
     }
 

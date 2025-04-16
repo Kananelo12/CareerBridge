@@ -38,22 +38,22 @@
                     <span class="nav__text">Overview</span>
                 </a>
             </li>
-            <li class="nav__item" id="inbox">
-                <a href="#" class="nav__link">
-                    <span class="nav__icon"><i class="fas fa-envelope"></i></span>
-                    <span class="nav__text">Inbox</span>
-                </a>
-            </li>
             <li class="nav__item" id="users">
                 <a href="#" class="nav__link">
-                    <span class="nav__icon"><i class="fas fa-user"></i></span>
+                    <span class="nav__icon"><i class="fas fa-users"></i></span>
                     <span class="nav__text">Users</span>
                 </a>
             </li>
             <li class="nav__item" id="internship">
                 <a href="#" class="nav__link">
-                    <span class="nav__icon"><i class="fas fa-house-user"></i></span>
+                    <span class="nav__icon"><i class="fas fa-user-tie"></i></span>
                     <span class="nav__text">Internship</span>
+                </a>
+            </li>
+            <li class="nav__item" id="feedback">
+                <a href="#" class="nav__link">
+                    <span class="nav__icon"><i class="fas fa-envelope"></i></span>
+                    <span class="nav__text">Reviews</span>
                 </a>
             </li>
             <li class="nav__item">
@@ -70,7 +70,7 @@
                 <a href="LogoutServlet" class="logout__btn flex"><i class="fas fa-arrow-right-from-bracket"></i></a>
             </div>
             <div class="app__version">
-                <h2 class="profile__title">LehaeConnect</h2>
+                <h2 class="profile__title">CareerBridge</h2>
                 <span class="profile__role">ver. 0.234</span>
             </div>
             <div class="more__settings flex">

@@ -42,6 +42,47 @@ public class UserDAO {
         return userId;
     }
 
+    public void updateUser(User user) throws SQLException {
+        String sql = "UPDATE users SET email = ? WHERE user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getEmail());
+            stmt.setInt(2, user.getUserId());
+            stmt.executeUpdate();
+        }
+    }
+
+    public void deleteUser(int userId) throws SQLException {
+        String query = "DELETE FROM users WHERE user_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            pstmt.executeUpdate();
+        }
+    }
+
+    // Retrieves a user by id along
+    public UserDetail getUserById(int userId) throws SQLException {
+        String query = "SELECT user_id, firstName, lastName, email, phoneNumber, address, profileImageUrl, company_id "
+                + "FROM userdetails WHERE user_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    UserDetail userDetails = new UserDetail();
+                    userDetails.setUserId(rs.getInt("user_id"));
+                    userDetails.setFirstName(rs.getString("firstName"));
+                    userDetails.setLastName(rs.getString("lastName"));
+                    userDetails.setEmail(rs.getString("email"));
+                    userDetails.setPhoneNumber(rs.getString("phoneNumber"));
+                    userDetails.setAddress(rs.getString("address"));
+                    userDetails.setProfileImageUrl(rs.getString("profileImageUrl"));
+                    userDetails.setCompanyId(rs.getInt("company_id"));
+                    return userDetails;
+                }
+            }
+        }
+        return null;
+    }
+
     // Retrieves a user by email along with its role info (join with the roles table)
     public User getUserByEmail(String email) throws SQLException {
         String query = "SELECT u.user_id, u.email, u.password, u.role_id, r.rolename FROM users u JOIN roles r ON u.role_id = r.role_id WHERE email = ?";
@@ -52,7 +93,7 @@ public class UserDAO {
             User user = new User();
             user.setUserId(rs.getInt("user_id"));
             user.setEmail(rs.getString("email"));
-            user.setPassword(rs.getString("password")); // Hashed password from DB
+            user.setPassword(rs.getString("password"));
             user.setRoleId(rs.getInt("role_id"));
             user.setRoleName(rs.getString("rolename"));
             return user;
@@ -135,7 +176,38 @@ public class UserDAO {
                     details.setPhoneNumber(rs.getString("phoneNumber"));
                     details.setAddress(rs.getString("address"));
                     details.setProfileImageUrl(rs.getString("profileImageUrl"));
-                    
+
+                    user.setUserDetails(details);
+                    users.add(user);
+                }
+            }
+        }
+        return users;
+    }
+
+    public List<User> getInternUsers() throws SQLException {
+        List<User> users = new ArrayList<>();
+        String query
+                = "SELECT DISTINCT u.user_id, u.email, "
+                + "ud.firstName, ud.lastName, ud.phoneNumber, ud.address, ud.profileImageUrl "
+                + "FROM users u "
+                + "JOIN userdetails ud ON u.user_id = ud.user_id "
+                + "JOIN internship i ON u.user_id = i.student_id ";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User();
+                    user.setUserId(rs.getInt("user_id"));
+                    user.setEmail(rs.getString("email"));
+
+                    UserDetail details = new UserDetail();
+                    details.setFirstName(rs.getString("firstName"));
+                    details.setLastName(rs.getString("lastName"));
+                    details.setPhoneNumber(rs.getString("phoneNumber"));
+                    details.setAddress(rs.getString("address"));
+                    details.setProfileImageUrl(rs.getString("profileImageUrl"));
+
                     user.setUserDetails(details);
                     users.add(user);
                 }

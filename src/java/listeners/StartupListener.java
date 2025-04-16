@@ -68,7 +68,7 @@ public class StartupListener implements ServletContextListener {
                 System.out.println("[SEED] No users found. Creating admin account...");
 
                 // Insert into users table
-                String email = "joel@careerbridge.com";
+                String email = "kananeloj12@gmail.com";
                 String plainPassword = "admin@123";
                 String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
 

@@ -137,7 +137,7 @@
                                 class="form-control"
                                 name="email"
                                 id="email"
-                                placeholder="John Doe"
+                                placeholder="johndoe@gmail.com"
                                 />
                         </div>
                         <div class="input-group">
@@ -147,7 +147,6 @@
                                 class="form-control"
                                 name="password"
                                 id="password"
-                                placeholder="johndoe@gmail.com"
                                 />
                         </div>
                         <div class="check-group">
