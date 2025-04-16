@@ -38,22 +38,22 @@
                     <span class="nav__text">Overview</span>
                 </a>
             </li>
-            <li class="nav__item" id="inbox">
-                <a href="#" class="nav__link">
-                    <span class="nav__icon"><i class="fas fa-envelope"></i></span>
-                    <span class="nav__text">Inbox</span>
-                </a>
-            </li>
             <li class="nav__item" id="internship">
                 <a href="#" class="nav__link">
-                    <span class="nav__icon"><i class="fas fa-user"></i></span>
+                    <span class="nav__icon"><i class="fas fa-user-tie"></i></span>
                     <span class="nav__text">Internships</span>
                 </a>
             </li>
             <li class="nav__item" id="application">
                 <a href="#" class="nav__link">
-                    <span class="nav__icon"><i class="fas fa-house-user"></i></span>
+                    <span class="nav__icon"><i class="fas fa-clipboard-list"></i></span>
                     <span class="nav__text">Applications</span>
+                </a>
+            </li>
+            <li class="nav__item" id="feedback">
+                <a href="#" class="nav__link">
+                    <span class="nav__icon"><i class="fas fa-envelope"></i></span>
+                    <span class="nav__text">Feedback & Reviews</span>
                 </a>
             </li>
             <li class="nav__item" id="company">

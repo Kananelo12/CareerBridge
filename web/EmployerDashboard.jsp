@@ -4,6 +4,7 @@
     Author     : kanan
 --%>
 
+<%@page import="dao.FeedbackDAO"%>
 <%@page import="java.util.Map"%>
 <%@page import="dao.ApplicationDAO"%>
 <%@page import="model.Internship"%>
@@ -51,6 +52,9 @@
     List<Map<String, Object>> applications = new ApplicationDAO(conn).getApplicationsByCompanyId(companyId);
     request.setAttribute("applications", applications);
 
+    List<Map<String, Object>> feedback = new FeedbackDAO(conn).getFeedbacksByCompanyId(companyId);
+    request.setAttribute("feedbackDetails", feedback);
+
     String messageClass = "";
     if (request.getAttribute("error") != null || request.getAttribute("success") != null) {
         messageClass = "active";
@@ -75,6 +79,13 @@
         <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon/favicon-16x16.png">
         <link rel="manifest" href="./assets/images/favicon/site.webmanifest">
+
+        <style>
+            .pdf {
+                width: 100%;
+                aspect-ratio: 4/3;
+            }
+        </style>
     </head>
     <body class="<%=savedTheme%>">
         <!-- ======= Message Box ======= -->
@@ -268,8 +279,8 @@
                                             <td>${app.applicationId}</td>
                                             <td>${row.studentName}</td>
                                             <td>${row.companyName}</td>
-                                            <td><a href="${app.cvUrl}" target="_blank">View CV</a></td>
-                                            <td><a href="${app.transcriptUrl}" target="_blank">View Transcript</a></td>
+                                            <td><a href="${app.cvUrl}" id="downloadBtn" target="_blank">View CV</a></td>
+                                            <td><a href="${app.transcriptUrl}" id="downloadBtn" target="_blank">View Transcript</a></td>
                                             <td>${app.applicationDate}</td>
                                             <td class="badge">${app.status}</td>
                                             <td class="actions">
@@ -277,6 +288,39 @@
                                                 <a href="ApplicationServlet?action=reject&appId=${app.applicationId}&studId=${app.studentId}&internshipId=${app.internshipId}" class="btn delete-btn"
                                                    onclick="return confirm('Are you sure you want to reject this application?');">Reject</a>
                                             </td>
+                                        </tr>
+                                    </c:forEach>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section hidden" id="feedbackSection">
+                    <div class="container">
+                        <h2 class="table-title">Feedback & Reviews</h2>
+                        <div class="responsive-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#ID</th>
+                                        <th>Student</th>
+                                        <th>Internship</th>
+                                        <th>Rating</th>
+                                        <th>Comments</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="record" items="${feedbackDetails}">
+                                        <tr>
+                                            <td>${record.feedback.feedbackId}</td>
+                                            <td>${record.student_name}</td>
+                                            <td>${record.internship_title}</td>
+                                            <td>${record.feedback.rating}</td>
+                                            <td>${record.feedback.comments}</td>
+                                            <td>${record.feedback.feedbackDate}</td>
                                         </tr>
                                     </c:forEach>
 
@@ -356,13 +400,27 @@
             </div>
         </div>
 
-        <script>
-            // Check if a saved theme exists in localStorage
-            const savedTheme = localStorage.getItem("saved-theme");
-            if (savedTheme) {
-                document.body.classList[savedTheme === "dark" ? "add" : "remove"]("dark-theme");
-            }
+        <!--======= File Frame Modal =======-->
+        <div class="modal__overlay flex" id="fileFrame">
+            <div class="modal frame_modal" style="max-width: 800px;">
+                <div class="modal__title flex" style="margin-bottom: 1.3rem;" id="closeFileFrame">
+                    <div class="close__modal__btn flex">
+                        <i class="fas fa-close"></i>
+                    </div>
+                </div>
 
+                <div class="modal__body">
+                    <embed 
+                        class="pdf" 
+                        src="./assets/cv.pdf"
+                        type="application/pdf"
+                        />
+                </div>
+            </div>
+        </div>
+
+
+        <script>
             const navItems = document.querySelectorAll(".nav__item");
             navItems.forEach((navItem) => {
                 navItem.addEventListener("click", function () {
@@ -378,6 +436,20 @@
                 e.preventDefault();
                 internshipModal.classList.add("active");
 
+            });
+
+            const downloadButtons = document.querySelectorAll("#downloadBtn");
+            const closeFrameBtn = document.getElementById("closeFileFrame");
+            const frame = document.getElementById("fileFrame");
+            downloadButtons.forEach((downloadBtn) => {
+                downloadBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    frame.classList.add("active");
+                });
+            });
+
+            closeFrameBtn.addEventListener("click", () => {
+                frame.classList.remove("active");
             });
         </script>
         <script src="./assets/js/utilities.js"></script>

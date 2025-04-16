@@ -35,8 +35,11 @@ import utils.ConnectionFile;
 
 public class RegisterServlet extends HttpServlet {
 
-    String IMAGE_DIRECTORY;
-    String DOCS_DIRECTORY;
+    private String TEMP_IMAGE_DIRECTORY;
+    private String TEMP_DOCS_DIRECTORY;
+    
+    private String finalImgPath;
+    private String finalDocPath;
 
     // Database connection variable
     private Connection conn;
@@ -44,13 +47,17 @@ public class RegisterServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         // Set relative paths for images and documents
-        IMAGE_DIRECTORY = getServletContext().getRealPath("/uploads/images");
-        DOCS_DIRECTORY = getServletContext().getRealPath("/uploads/documents");
+        TEMP_IMAGE_DIRECTORY = getServletContext().getRealPath("/uploads/images");
+        TEMP_DOCS_DIRECTORY = getServletContext().getRealPath("/uploads/documents");
+        finalImgPath = TEMP_IMAGE_DIRECTORY.replace("build" + File.separator, "");
+        finalDocPath = TEMP_DOCS_DIRECTORY.replace("build" + File.separator, "");
 
         try {
             conn = ConnectionFile.getConn();
-            System.out.println("Image Directory: " + IMAGE_DIRECTORY);
-            System.out.println("Documentary Directory: " + DOCS_DIRECTORY);
+            System.out.println("TEMP Image Directory: " + TEMP_IMAGE_DIRECTORY);
+            System.out.println("TEMP Documentary Directory: " + TEMP_DOCS_DIRECTORY);
+            System.out.println("FINAL IMAGE Directory: " + finalImgPath);
+            System.out.println("FINAL IMAGE Directory: " + finalDocPath);
         } catch (Exception ex) {
             System.out.println("Connection Failed: " + ex.getMessage());
         }
@@ -90,12 +97,12 @@ public class RegisterServlet extends HttpServlet {
             String uniqueImageName = UUID.randomUUID().toString() + "." + imageExtension;
 
             // Create the uploads/images directory if it doesn't exist
-            File uploadDir = new File(IMAGE_DIRECTORY);
+            File uploadDir = new File(finalImgPath);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
             // Save the file to disk
-            String imagePath = IMAGE_DIRECTORY + File.separator + uniqueImageName;
+            String imagePath = finalImgPath + File.separator + uniqueImageName;
             imageFilePart.write(imagePath);
             // Set the relative path to be saved in the database (for later retrieval)
             // (You might choose to store the absolute path in production, but here we assume relative)
@@ -220,11 +227,11 @@ public class RegisterServlet extends HttpServlet {
                     return;
                 }
                 String uniqueLogoName = UUID.randomUUID().toString() + "." + logoExtension;
-                File logoUploadDir = new File(IMAGE_DIRECTORY);
+                File logoUploadDir = new File(finalImgPath);
                 if (!logoUploadDir.exists()) {
                     logoUploadDir.mkdirs();
                 }
-                String logoPath = IMAGE_DIRECTORY + File.separator + uniqueLogoName;
+                String logoPath = finalImgPath + File.separator + uniqueLogoName;
                 logoFilePart.write(logoPath);
                 dbLogoPath = "uploads/images/" + uniqueLogoName;
             }
@@ -240,11 +247,11 @@ public class RegisterServlet extends HttpServlet {
                     return;
                 }
                 String uniqueDocName = UUID.randomUUID().toString() + "." + docExtension;
-                File docUploadDir = new File(DOCS_DIRECTORY);
+                File docUploadDir = new File(finalDocPath);
                 if (!docUploadDir.exists()) {
                     docUploadDir.mkdirs();
                 }
-                String docPath = DOCS_DIRECTORY + File.separator + uniqueDocName;
+                String docPath = finalDocPath + File.separator + uniqueDocName;
                 documentFilePart.write(docPath);
                 dbDocPath = "uploads/documents/" + uniqueDocName;
             }

@@ -60,12 +60,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeMsgBtn = document.querySelector(".close__msg__btn");
     const messageBox = document.querySelector(".message__wrapper");
 
-    closeMsgBtn.addEventListener("click", () => {
-        messageBox.classList.remove("active");
-        setTimeout(() => {
-            messageBox.style.display = "none";
-        }, 300);
-    });
+    if (closeMsgBtn) {
+        closeMsgBtn.addEventListener("click", () => {
+            messageBox.classList.remove("active");
+            setTimeout(() => {
+                messageBox.style.display = "none";
+            }, 300);
+        });
+    }
 
     // Automatically remove "active" class after 10 seconds (10,000 milliseconds)
     if (messageBox) {
@@ -79,7 +81,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // hide the modal overlay
     const modal = document.querySelector(".modal__overlay");
     const closeModalBtn = document.querySelector(".close__modal__btn");
-    closeModalBtn.addEventListener("click", () => {
-        modal.classList.remove("active");
-    });
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", () => {
+            modal.classList.remove("active");
+        });
+    }
 });

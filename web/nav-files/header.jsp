@@ -56,3 +56,21 @@
         </c:otherwise>
     </c:choose>
 </header>
+
+<script>
+    // Creating media query condition that target at most 768px wide viewport
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+    const navbar = document.querySelector(".navbar");
+        const header = document.querySelector("header");
+        
+    if (mediaQuery.matches) {
+        console.log("Navbar:" + navbar);
+        console.log("Header" + header);
+        
+        if (navbar && header) {
+            navbar.addEventListener("click", () => {
+               header.classList.toggle("mobile-active");
+            });
+        }
+    }
+</script>

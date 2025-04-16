@@ -4,6 +4,8 @@
     Author     : kanan
 --%>
 
+<%@page import="model.Feedback"%>
+<%@page import="dao.FeedbackDAO"%>
 <%@page import="model.UserDetail"%>
 <%@page import="model.User"%>
 <%@page import="utils.ConnectionFile"%>
@@ -41,7 +43,10 @@
 
     List<Map<String, Object>> applications = new ApplicationDAO(conn).getApplicationsByStudentId(studentId);
     request.setAttribute("applications", applications);
-    
+
+    List<Map<String, Object>> feedbackDetails = new FeedbackDAO(conn).getFeedbackDetailsByStudentId(studentId);
+    request.setAttribute("feedbackDetails", feedbackDetails);
+
     String messageClass = "";
     if (request.getAttribute("error") != null || request.getAttribute("success") != null) {
         messageClass = "active";
@@ -51,7 +56,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Student Dashboard | Career Bridge</title>
 
         <!-- ======= CSS Styles ======= -->
         <link rel="stylesheet" href="./assets/css/all.min.css" />
@@ -67,7 +72,7 @@
         <link rel="manifest" href="./assets/images/favicon/site.webmanifest">
     </head>
     <body class="<%=savedTheme%>">
-        
+
         <!-- ======= Message Box ======= -->
         <div class="message__wrapper <%=messageClass%>">
             <div class="message__box">
@@ -93,7 +98,7 @@
                 </div>
             </div>
         </div>
-                
+
 
         <main class="dashboard">
             <div class="dashboard-left-section" id="sidebarContainer">
@@ -177,11 +182,11 @@
                         </div>
                     </div>
                 </section>
-                
+
                 <section class="section hidden" id="internshipSection">
                     <%@include file="./nav-files/internshipCards.jsp" %>
                 </section>
-                
+
                 <section class="section hidden" id="applicationSection">
                     <div class="container">
                         <h2 class="table-title">Track My Applications</h2>
@@ -212,15 +217,50 @@
                                             <td class="badge">${app.status}</td>
                                             <td class="actions">
                                                 <c:choose>
-                                                    <c:when test="${app.status eq 'pending'}">
-                                                        
+                                                    <c:when test="${app.status eq 'pending' or app.status eq 'rejected'}">
+
+                                                    </c:when>
+                                                    <c:when test="${app.status eq 'completed'}">
+                                                        <a href="feedback.jsp?appId=${app.applicationId}&studId=${app.studentId}&internship_id=${app.internshipId}" class="btn edit-btn">Review</a>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <a href="deleteApplication?id=${app.applicationId}" class="btn delete-btn"
-                                                   onclick="return confirm('Are you sure you want to delete this application?');">Reject</a>
+                                                        <a href="ApplicationServlet?action=complete&appId=${app.applicationId}&studId=${app.studentId}&internshipId=${app.internshipId}" class="btn edit-btn">Complete</a>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
+                                        </tr>
+                                    </c:forEach>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section hidden" id="feedbackSection">
+                    <div class="container">
+                        <h2 class="table-title">Feedback & Reviews</h2>
+                        <div class="responsive-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#ID</th>
+                                        <th>Student</th>
+                                        <th>Internship</th>
+                                        <th>Rating</th>
+                                        <th>Comments</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="record" items="${feedbackDetails}">
+                                        <tr>
+                                            <td>${record.feedback.feedbackId}</td>
+                                            <td>${record.student_name}</td>
+                                            <td>${record.internship_title}</td>
+                                            <td>${record.feedback.rating}</td>
+                                            <td>${record.feedback.comments}</td>
+                                            <td>${record.feedback.feedbackDate}</td>
                                         </tr>
                                     </c:forEach>
 
@@ -267,21 +307,16 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="./assets/js/customChart.js"></script>
         <script>
-            const savedTheme = localStorage.getItem("saved-theme");
-            if (savedTheme) {
-                document.body.classList[savedTheme === "dark" ? "add" : "remove"]("dark-theme");
-            }
-            
             const navItems = document.querySelectorAll(".nav__item");
             navItems.forEach((navItem) => {
-            navItem.addEventListener("click", function () {
-                navItems.forEach(item => item.classList.remove("active"));
+                navItem.addEventListener("click", function () {
+                    navItems.forEach(item => item.classList.remove("active"));
                     this.classList.add("active");
                 });
             });
-            
+
             const internshipIdInput = document.getElementById('internship_id');
-            
+
 
             const applyButtons = document.querySelectorAll(".grid__btn");
             const applicationModal = document.getElementById("application-modal");
@@ -293,7 +328,7 @@
                     applicationModal.classList.add("active");
                 });
             });
-            
+
             // hide the modal overlay
             const modal = document.querySelector(".modal__overlay");
             const closeModalBtn = document.querySelector(".close__modal__btn");

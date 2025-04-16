@@ -38,12 +38,6 @@
                     <span class="nav__text">Overview</span>
                 </a>
             </li>
-            <li class="nav__item">
-                <a href="#" class="nav__link">
-                    <span class="nav__icon"><i class="fas fa-envelope"></i></span>
-                    <span class="nav__text">Inbox</span>
-                </a>
-            </li>
             <li class="nav__item" id="internship">
                 <a href="#" class="nav__link">
                     <span class="nav__icon"><i class="fas fa-user-tie"></i></span>
@@ -56,19 +50,7 @@
                     <span class="nav__text">Application Tracker</span>
                 </a>
             </li>
-            <li class="nav__item">
-                <a href="#" class="nav__link">
-                    <span class="nav__icon"><i class="fas fa-id-card-clip"></i></span>
-                    <span class="nav__text">Resume & Documents</span>
-                </a>
-            </li>
-            <li class="nav__item">
-                <a href="#" class="nav__link">
-                    <span class="nav__icon"><i class="fas fa-calendar-check"></i></span>
-                    <span class="nav__text">Calendar</span>
-                </a>
-            </li>
-            <li class="nav__item">
+            <li class="nav__item" id="feedback">
                 <a href="#" class="nav__link">
                     <span class="nav__icon"><i class="fas fa-comment"></i></span>
                     <span class="nav__text">Feedback & Reviews</span>

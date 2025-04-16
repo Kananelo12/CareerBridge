@@ -42,6 +42,12 @@
         <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon/favicon-16x16.png">
         <link rel="manifest" href="./assets/images/favicon/site.webmanifest">
+        
+        <style>
+            div.eapps-widget {
+                position: static !important;
+            }
+        </style>
     </head>
     <body class="<%=savedTheme%>">
         <!-- ======= Scroll to top button ======= -->
@@ -242,12 +248,16 @@
             </div>
         </div>
 
-                        
+
+        <!-- Elfsight AI Chatbot | Career Bridge AI Chatbot -->
+        <script src="https://static.elfsight.com/platform/platform.js" async></script>
+        <div class="elfsight-app-8e0e3896-bb4d-4a33-b9db-187b5c221750" data-elfsight-app-lazy></div>
+        
         <script src="./assets/js/utilities.js"></script>
         <script src="./assets/js/index.js"></script>
         <script>
             const internshipIdInput = document.getElementById('internship_id');
-            
+
             const internshipGridTitle = document.querySelector(".card__title");
             internshipGridTitle.classList.add("hidden");
             const applyButtons = document.querySelectorAll(".grid__btn");

@@ -41,16 +41,19 @@ public class ApplicationServlet extends HttpServlet {
     private Connection conn;
 
     // directory path for student docs
-    private String STUDENT_DIRECTORY;
+    private String TEMP_STUDENT_DIRECTORY;
+    private String finalStudentPath;
 
     @Override
     public void init() {
         // Set relative paths for images and documents
-        STUDENT_DIRECTORY = getServletContext().getRealPath("/uploads/studentdocs");
+        TEMP_STUDENT_DIRECTORY = getServletContext().getRealPath("/uploads/studentdocs");
+        finalStudentPath = TEMP_STUDENT_DIRECTORY.replace("build" + File.separator, "");
 
         try {
             conn = ConnectionFile.getConn();
-            System.out.println("Student Directory: " + STUDENT_DIRECTORY);
+            System.out.println("STUDENT Directory: " + TEMP_STUDENT_DIRECTORY);
+            System.out.println("FINAL STUDENT Directory: " + finalStudentPath);
         } catch (Exception ex) {
             System.err.println("Connection Failed: " + ex.getMessage());
         }
@@ -104,17 +107,28 @@ public class ApplicationServlet extends HttpServlet {
                     app.setStatus("rejected");
                     request.setAttribute("error", "Application has been rejected!");
                     emailBody = "Regratably, Your Application has been rejected!\n\nAutomated System\nApplication ID: " + appId + "\nCareerBridge";
+                } else if ("complete".equalsIgnoreCase(action)) {
+                    // Update status to "completed"
+                    app.setStatus("completed");
+                    request.setAttribute("success", "Congratulations\nInternship has been completed!");
+                    emailBody = "Congratulations, Your Internship period has been completed. Welldone on reaching this far!\n\nAutomated System\nApplication ID: " + appId + "\nCareerBridge";
+
+                    appService.updateApplication(app);
+                    EmailUtil.sendEmail(recipientEmail, subject, emailBody);
+
+                    request.getRequestDispatcher("StudentDashboard.jsp").forward(request, response);
+                    return;
                 } else {
                     // Otherwise, update status to "rejected"
                     InternshipService internService = new InternshipService(conn);
                     Internship internship = new Internship();
-                    
+
                     app.setStatus("accepted");
-                    
+
                     // Update internships with accepted users
                     internship.setStudentId(studentId);
                     internship.setInternshipId(internshipId);
-                    
+
                     internService.updateIntern(internship);
                     request.setAttribute("success", "Application accepted successfully.");
                     emailBody = "Congratulations, Your Application has been accepted.\nApplication ID: " + appId + "\n\nAutomated System\nCareerBridge";
@@ -189,11 +203,11 @@ public class ApplicationServlet extends HttpServlet {
                 return;
             }
             String uniqueCVName = java.util.UUID.randomUUID().toString() + "." + cvExtension;
-            File cvDir = new File(STUDENT_DIRECTORY);
+            File cvDir = new File(finalStudentPath);
             if (!cvDir.exists()) {
                 cvDir.mkdirs();
             }
-            String cvPath = STUDENT_DIRECTORY + File.separator + uniqueCVName;
+            String cvPath = finalStudentPath + File.separator + uniqueCVName;
             cvPart.write(cvPath);
             cvUrl = "uploads/studentdocs/" + uniqueCVName; // Use relative URL for your web app.
         }
@@ -210,11 +224,11 @@ public class ApplicationServlet extends HttpServlet {
                 return;
             }
             String uniqueTranscriptName = java.util.UUID.randomUUID().toString() + "." + transcriptExtension;
-            File transcriptDir = new File(STUDENT_DIRECTORY);
+            File transcriptDir = new File(finalStudentPath);
             if (!transcriptDir.exists()) {
                 transcriptDir.mkdirs();
             }
-            String transcriptPath = STUDENT_DIRECTORY + File.separator + uniqueTranscriptName;
+            String transcriptPath = finalStudentPath + File.separator + uniqueTranscriptName;
             transcriptPart.write(transcriptPath);
             transcriptUrl = "uploads/studentdocs/" + uniqueTranscriptName;
         } else {
@@ -229,6 +243,7 @@ public class ApplicationServlet extends HttpServlet {
             return;
         }
 
+            
         // Set application data
         Application application = new Application();
         application.setStudentId(user.getUserId());
@@ -244,6 +259,7 @@ public class ApplicationServlet extends HttpServlet {
         try {
             ApplicationDAO applicationDAO = new ApplicationDAO(conn);
             int newApplicationId = applicationDAO.insertApplication(application);
+            
 
             request.setAttribute("success", "Application submitted successfully with ID: " + newApplicationId);
             request.getRequestDispatcher("StudentDashboard.jsp").forward(request, response);
