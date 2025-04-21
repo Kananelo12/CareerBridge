@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dao.FeedbackDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,22 +14,56 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import service.InternshipService;
 import utils.ConnectionFile;
+
 /**
  *
  * @author kanan
  */
 public class FeedbackServlet extends HttpServlet {
-    
+
     // Database connection variable
     private Connection conn;
-    
+
     @Override
     public void init() throws ServletException {
         try {
             conn = ConnectionFile.getConn();
         } catch (Exception ex) {
             System.err.println("Connection Failed: " + ex.getMessage());
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (conn == null) {
+            request.setAttribute("error", "Database connection failed. Try again later.");
+            request.getRequestDispatcher("feedback.jsp").forward(request, response);
+            return;
+        }
+
+        // Get the action and id params
+        String action = request.getParameter("action");
+        String feedbackIdParam = request.getParameter("id");
+
+        int feedbackId;
+        if ("delete".equalsIgnoreCase(action)) {
+            try {
+                feedbackId = Integer.parseInt(feedbackIdParam);
+                
+                // Delete the feedback using its ID
+                InternshipService internService = new InternshipService(conn);
+                internService.deleteFeedback(feedbackId);
+                
+                request.setAttribute("success", "Feedback deleted successfully!");
+                request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
+            } catch (NumberFormatException | SQLException ex) {
+                request.setAttribute("error", ex.getMessage());
+                request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
+            }
         }
     }
 
@@ -40,7 +75,7 @@ public class FeedbackServlet extends HttpServlet {
             request.getRequestDispatcher("feedback.jsp").forward(request, response);
             return;
         }
-        
+
         // Get parameters from the form submission (assumed to be sent via POST)
         String internshipIdParam = request.getParameter("internship_id");
         String studentIdParam = request.getParameter("student_id");
@@ -48,14 +83,14 @@ public class FeedbackServlet extends HttpServlet {
         String comments = request.getParameter("comments");
 
         // Validating all fields
-        if (internshipIdParam == null || studentIdParam == null || 
-                rating == null || rating.trim().isEmpty() ||
-                comments == null || comments.trim().isEmpty()) {
+        if (internshipIdParam == null || studentIdParam == null
+                || rating == null || rating.trim().isEmpty()
+                || comments == null || comments.trim().isEmpty()) {
             request.setAttribute("error", "All fields are required.");
             request.getRequestDispatcher("feedback.jsp").forward(request, response);
             return;
         }
-        
+
         int internshipId;
         int studentId;
         try {
@@ -87,10 +122,9 @@ public class FeedbackServlet extends HttpServlet {
             ex.printStackTrace();
             request.setAttribute("error", "Feedback submission failed: " + ex.getMessage());
         }
-        
+
         request.getRequestDispatcher("feedback.jsp").forward(request, response);
     }
-
 
     @Override
     public String getServletInfo() {

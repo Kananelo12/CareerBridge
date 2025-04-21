@@ -82,6 +82,10 @@ public class UserService {
         }
         return null;
     }
+    
+    public User getUserByEmail(String email) throws SQLException {
+        return userDAO.getUserByEmail(email);
+    }
 
     public void updateUser(User user, UserDetail details) throws SQLException {
         conn.setAutoCommit(false);
@@ -119,5 +123,9 @@ public class UserService {
 
     public Company getCompany(int userId) throws SQLException {
         return companyDAO.getCompanyByUserId(userId);
+    }
+    
+    public void updateCompany(Company company) throws SQLException {
+        companyDAO.updateCompany(company);
     }
 }

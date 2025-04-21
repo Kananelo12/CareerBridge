@@ -94,6 +94,39 @@ public class FeedbackDAO {
         }
     }
 
+    public List<Map<String, Object>> getAllFeedbackDetails() throws SQLException {
+        List<Map<String, Object>> feedbackDetails = new ArrayList<>();
+
+        String sql = """
+        SELECT 
+          f.*,
+          CONCAT(u.firstName, ' ', u.lastName) AS student_name,
+          i.title AS internship_title
+        FROM feedback f
+        JOIN userdetails u ON f.student_id = u.user_id
+        JOIN internship i ON f.internship_id = i.internship_id
+        ORDER BY f.feedback_date DESC
+        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Map<String, Object> row = new HashMap<>();
+
+                // Map the core Feedback bean
+                Feedback fb = mapRowToFeedback(rs);
+                row.put("feedback", fb);
+
+                // Add the joined fields
+                row.put("studentName", rs.getString("student_name"));
+                row.put("internshipTitle", rs.getString("internship_title"));
+
+                feedbackDetails.add(row);
+            }
+        }
+
+        return feedbackDetails;
+    }
+
     /**
      * Retrieves a feedback record by its ID.
      *
@@ -150,6 +183,7 @@ public class FeedbackDAO {
         }
         return feedbackDetails;
     }
+
     public List<Feedback> getFeedbacksByInternshipId(int internshipId) throws SQLException {
         List<Feedback> feedbackList = new ArrayList<>();
         String sql = "SELECT * FROM feedback WHERE internship_id = ?";

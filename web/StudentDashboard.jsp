@@ -289,7 +289,7 @@
 
                         <div class="input-group">
                             <label for="cv" class="form-label">Upload Your CV</label>
-                            <input type="file" name="cv" id="cv" class="form-control" accept=".pdf,.doc,.docx" required />
+                            <input type="file" name="cv" id="cv" class="form-control" accept=".pdf" required />
                         </div>
                         <div class="input-group">
                             <label for="transcript" class="form-label">Upload Your Transcript (PDF)</label>

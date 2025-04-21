@@ -1,5 +1,7 @@
 package service;
 
+import dao.ApplicationDAO;
+import dao.FeedbackDAO;
 import dao.InternshipDAO;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,10 +15,14 @@ public class InternshipService {
     
     private Connection conn;
     private InternshipDAO internshipDAO;
+    private FeedbackDAO feedbackDAO;
+    private ApplicationDAO applicationDAO;
 
     public InternshipService(Connection conn) {
         this.conn = conn;
         this.internshipDAO = new InternshipDAO(conn);
+        this.feedbackDAO = new FeedbackDAO(conn);
+        this.applicationDAO = new ApplicationDAO(conn);
     }
     
     /**
@@ -59,7 +65,8 @@ public class InternshipService {
     public void deleteInternship(int internshipId) throws SQLException {
         internshipDAO.deleteInternship(internshipId);
     }
-
+    
+    
     /**
      * Retrieves an internship by its ID.
      * 
@@ -81,6 +88,10 @@ public class InternshipService {
      */
     public List<Internship> getInternships(int offset, int limit) throws SQLException {
         return internshipDAO.getInternships(offset, limit);
+    }
+    
+    public void deleteFeedback(int feedbackId) throws SQLException {
+        feedbackDAO.deleteFeedback(feedbackId);
     }
 
 }

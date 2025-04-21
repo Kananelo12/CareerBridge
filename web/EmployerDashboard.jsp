@@ -330,7 +330,60 @@
                     </div>
                 </section>
                 <section class="section hidden" id="companySection">
-                    Company Profile
+                    <div class="container">
+                        <h2 class="form-title" style="margin-bottom: 2rem;">Edit Company Profile</h2>
+
+                        <form action="EditCompanyServlet" method="POST" class="global-form">
+                            <!-- Hidden field for company_id -->
+                            <input type="hidden" name="companyId" value="${company.companyId}" />
+
+                            <div class="input-group">
+                                <label for="companyName" class="form-label">Company Name</label>
+                                <input type="text" name="companyName" id="companyName" class="form-control" value="${company.companyName}" required />
+                            </div>
+
+                            <div class="input-group">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea name="description" id="description" class="form-control" rows="3">${company.description}</textarea>
+                            </div>
+
+                            <div class="input-group-flex">
+                                <div class="grid-input-group">
+                                    <label for="industry" class="form-label">Industry</label>
+                                    <select name="industry" id="industry" class="form-control" required>
+                                        <option value="Information Technology" ${company.industry == 'Information Technology' ? 'selected' : ''}>Information Technology</option>
+                                        <option value="Finance & Banking" ${company.industry == 'Finance & Banking' ? 'selected' : ''}>Finance & Banking</option>
+                                        <option value="Healthcare & Pharmaceuticals" ${company.industry == 'Healthcare & Pharmaceuticals' ? 'selected' : ''}>Healthcare & Pharmaceuticals</option>
+                                        <option value="Education & Training" ${company.industry == 'Education & Training' ? 'selected' : ''}>Education & Training</option>
+                                        <option value="Telecommunications" ${company.industry == 'Telecommunications' ? 'selected' : ''}>Telecommunications</option>
+                                        <option value="Legal Services" ${company.industry == 'Legal Services' ? 'selected' : ''}>Legal Services</option>
+                                        <option value="Marketing & Advertising" ${company.industry == 'Marketing & Advertising' ? 'selected' : ''}>Marketing & Advertising</option>
+                                        <option value="Hospitality & Tourism" ${company.industry == 'Hospitality & Tourism' ? 'selected' : ''}>Hospitality & Tourism</option>
+                                    </select>
+                                </div>
+
+                                <div class="grid-input-group">
+                                    <label for="website" class="form-label">Website</label>
+                                    <input type="url" name="website" id="website" class="form-control" value="${company.website}" />
+                                </div>
+
+
+                            </div>
+
+                            <div class="input-group">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" name="location" id="location" class="form-control" value="${company.location}" required />
+                            </div>
+
+                            <div class="input-group">
+                                <label for="contactInfo" class="form-label">Contact Info</label>
+                                <input type="text" name="contactInfo" id="contactInfo" class="form-control" value="${company.contactInfo}" required />
+                            </div>
+                            <div class="input-group">
+                                <button type="submit" class="globalBtn" style="padding: 1rem 0; margin-top: .5rem;">Update Company</button>
+                            </div>
+                        </form>
+                    </div>
                 </section>
 
             </div>
@@ -412,7 +465,7 @@
                 <div class="modal__body">
                     <embed 
                         class="pdf" 
-                        src="./assets/cv.pdf"
+                        src="${app.cvUrl}"
                         type="application/pdf"
                         />
                 </div>

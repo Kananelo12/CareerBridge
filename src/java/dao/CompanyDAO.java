@@ -46,6 +46,22 @@ public class CompanyDAO {
         return companyId;
     }
 
+    public void updateCompany(Company company) throws SQLException {
+        String query = "UPDATE company SET company_name = ?, description = ?, industry = ?, website = ?, location = ?, contact_info = ? WHERE company_id = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, company.getCompanyName());
+            pstmt.setString(2, company.getDescription());
+            pstmt.setString(3, company.getIndustry());
+            pstmt.setString(4, company.getWebsite());
+            pstmt.setString(5, company.getLocation());
+            pstmt.setString(6, company.getContactInfo());
+            pstmt.setInt(7, company.getCompanyId());
+
+            pstmt.executeUpdate();
+        }
+    }
+
     public Company getCompanyByUserId(int userId) throws SQLException {
         String query = "SELECT c.company_id, c.company_name, c.description, c.industry, c.website, c.logo_url, c.location, c.contact_info "
                 + "FROM company c JOIN userdetails ud ON c.company_id = ud.company_id WHERE ud.user_id = ?";
@@ -68,5 +84,5 @@ public class CompanyDAO {
             }
         }
     }
-    
+
 }

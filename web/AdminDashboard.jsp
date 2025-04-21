@@ -4,6 +4,8 @@
     Author     : kanan
 --%>
 
+<%@page import="java.util.Map"%>
+<%@page import="dao.FeedbackDAO"%>
 <%@page import="model.Internship"%>
 <%@page import="dao.InternshipDAO"%>
 <%@page import="model.Company"%>
@@ -12,9 +14,10 @@
 <%@page import="java.util.List"%>
 <%@page import="model.User"%>
 <%@page import="dao.UserDAO"%>
+<%@page import="java.time.format.DateTimeFormatter" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"  %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%
     // protecting sensitive pages
@@ -64,6 +67,10 @@
     request.setAttribute("internships", internships);
     request.setAttribute("currentPage", currentPage);
     request.setAttribute("limit", limit);
+
+    FeedbackDAO feedbackDAO = new FeedbackDAO(conn);
+    List<Map<String, Object>> allFeedback = feedbackDAO.getAllFeedbackDetails();
+    request.setAttribute("allFeedback", allFeedback);
 
     String messageClass = "";
     if (request.getAttribute("error") != null || request.getAttribute("success") != null) {
@@ -124,43 +131,49 @@
             </div>
             <div class="dashboard-right-section">
 
+                <!-- Card stats -->
                 <section class="section" id="overviewSection">
-                    <div class="card-w-100" style="padding: 1.5rem; border-radius: 12px;">
-                        <div class="content">
-                            <h2 class="dashboard-role">Welcome, ${user.roleName}</h2>
-                            <p class="content-text">Start your day with managing the system</p>
-                        </div>
+                    <div class="card-w-100" style="padding:1.5rem; border-radius:12px;">
+                        <!-- header, welcome, etc. -->
 
                         <div class="card-container flex__between">
                             <div class="card-item">
                                 <div class="item-title">
-                                    <img src="./assets/images/calendar-check.png" alt="Card Icon" />
-                                    <span>94</span>
+                                    <img src="./assets/images/calendar-check.png" alt="Icon" />
+                                    <c:choose>
+                                        <c:when test="${not empty totalInternships}" >
+                                            <span>${totalInternships}</span>
+                                        </c:when>
+                                        <c:otherwise>
+
+                                            <span>EMPTY</span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
-                                <p class="item-text">Total number of  scheduled appointments</p>
+                                <p class="item-text">Total internships</p>
                             </div>
                             <div class="card-item">
                                 <div class="item-title">
-                                    <img src="./assets/images/hourglass.png" alt="Card Icon" />
-                                    <span>32</span>
+                                    <img src="./assets/images/hourglass.png" alt="Icon" />
+                                    <span>${totalApplications}</span>
                                 </div>
-                                <p class="item-text">Total number of  scheduled appointments</p>
+                                <p class="item-text">Total applications</p>
                             </div>
                             <div class="card-item">
                                 <div class="item-title">
-                                    <img src="./assets/images/alert-triangle.png" alt="Card Icon" />
-                                    <span>56</span>
+                                    <img src="./assets/images/hourglass.png" alt="Icon" />
+                                    <span>${pendingApplications}</span>
                                 </div>
-                                <p class="item-text">Total number of  scheduled appointments</p>
+                                <p class="item-text">Pending applications</p>
                             </div>
                         </div>
 
+                        <!-- Chart -->
                         <div class="card-container bento-grid">
                             <div class="card-group flex__between">
                                 <div class="card card-chart">
-                                    <h3 class="card-title">Analytics</h3>
+                                    <h3 class="card-title">Applications Last 7 Days</h3>
                                     <canvas id="statsChart"></canvas>
-                                    <p class="metric-change">Companies</p>
                                 </div>
                             </div>
                         </div>
@@ -240,7 +253,6 @@
                                         <th>Requirements</th>
                                         <th>Taken By</th>
                                         <th>Status</th>
-                                        <th class="actions">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -254,13 +266,6 @@
                                             <td>${internship.requirements}</td>
                                             <td>${internship.studentId}</td>
                                             <td class="badge">${internship.status}</td>
-                                            <td class="actions">
-                                                <a href="EditInternshipServlet?id=${internship.internshipId}" class="btn edit-btn">Edit</a>
-                                                <a href="EditInternshipServlet?action=delete&id=${internship.internshipId}" class="btn delete-btn" 
-                                                   onclick="return confirm('Are you sure you want to delete this internship?');">
-                                                    Delete
-                                                </a>
-                                            </td>
                                         </tr>
                                     </c:forEach>
                                 </tbody>
@@ -300,6 +305,43 @@
                     </div>
                 </section>
 
+                <section class="section hidden" id="feedbackSection">
+                    <div class="container">
+                        <h2 class="table-title">Feedback & Reviews</h2>
+                        <div class="responsive-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#ID</th>
+                                        <th>Student</th>
+                                        <th>Internship</th>
+                                        <th>Rating</th>
+                                        <th>Comments</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="row" items="${allFeedback}">
+                                        <c:set var="fb" value="${row.feedback}" />
+                                        <tr>
+                                            <td>${fb.feedbackId}</td>
+                                            <td>${row.studentName}</td>
+                                            <td>${row.internshipTitle}</td>
+                                            <td>${fb.rating}</td>
+                                            <td>${fb.comments}</td>
+                                            <td>${fb.feedbackDate}</td>
+                                            <td>
+                                                <a href="FeedbackServlet?action=delete&id=${fb.feedbackId}" class="btn delete-btn">Delete</a>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
             </div>
         </main>
 
@@ -320,6 +362,37 @@
         </script>
         <script src="./assets/js/utilities.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="./assets/js/customChart.js"></script>
+        <script>
+            const raw = [
+            <c:forEach var="dc" items="${dailyAppCounts}" varStatus="st">
+            { date: '${dc.date}', count: ${dc.count} }<c:if test="${!st.last}">,</c:if>
+            </c:forEach>
+            ];
+
+            const labels = raw.map(r => r.date);
+            const data = raw.map(r => r.count);
+
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                            label: 'Applications',
+                            data,
+                            backgroundColor: '#00ff99',
+                            borderRadius: 6,
+                        }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {legend: {display: false}},
+                    scales: {
+                        y: {ticks: {beginAtZero: true}},
+                    }
+                }
+            });
+        </script>
+
     </body>
 </html>

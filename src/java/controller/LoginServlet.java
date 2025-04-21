@@ -1,5 +1,6 @@
 package controller;
 
+import dao.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -24,6 +25,7 @@ import model.User;
 import model.UserDetail;
 import service.UserService;
 import utils.ConnectionFile;
+import utils.NotificationService;
 
 /**
  *
@@ -43,7 +45,7 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    // Generate a 6-digit OTP
+    // Generates a random 6-digit OTP code.
     private String generateOTP() {
         int otp = (int) (Math.random() * 900000) + 100000;
         return String.valueOf(otp);
@@ -59,9 +61,6 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // If the admin-passkey parameter exists, we assume this is an admin verification request.
-        // We validate that the adminEmail is provided. If so, we set success messages and any additional attributes,
-        // then forward back to the login page to display the OTP modal. Otherwise, we forward an error message.
         String isVerifyAdmin = request.getParameter("admin-passkey");
         if (isVerifyAdmin != null) {
             HttpSession session = request.getSession();
@@ -69,140 +68,136 @@ public class LoginServlet extends HttpServlet {
 
             // If an OTP is present in session, we're in OTP verification mode
             if (generatedOtp != null) {
-                String otp1 = request.getParameter("otp1");
-                String otp2 = request.getParameter("otp2");
-                String otp3 = request.getParameter("otp3");
-                String otp4 = request.getParameter("otp4");
-                String otp5 = request.getParameter("otp5");
-                String otp6 = request.getParameter("otp6");
+                StringBuilder enteredOtp = new StringBuilder();
+                for (int i = 1; i <= 6; i++) {
+                    String digit = request.getParameter("otp" + i);
+                    enteredOtp.append(digit != null ? digit : "");
+                }
 
-                // Check if all OTP fields are provided
-                if (otp1 != null && otp2 != null && otp3 != null && otp4 != null && otp5 != null && otp6 != null) {
-                    String enteredOtp = otp1 + otp2 + otp3 + otp4 + otp5 + otp6;
-                    if (generatedOtp.equals(enteredOtp)) {
-                        // OTP is correct; grant admin access
-                        session.setAttribute("isAdmin", true);
-                        response.sendRedirect("AdminDashboard.jsp");
-                        return;
-                    } else {
-                        request.setAttribute("error", "Incorrect OTP. Please try again.");
-                        request.setAttribute("active", session.getAttribute("adminEmail"));
+                if (enteredOtp.length() == 6 && generatedOtp.equals(enteredOtp.toString())) {
+                    // OTP correct: load user details and set in session
+                    String adminEmail = (String) session.getAttribute("adminEmail");
+                    UserDAO userDAO = new UserDAO(conn);
+                    User adminUser;
+                    try {
+                        adminUser = userDAO.getUserByEmail(adminEmail);
+                        session.setAttribute("user", adminUser);
+                    } catch (SQLException ex) {
+                        request.setAttribute("error", "Error verifying user: " + ex.getMessage());
                         request.getRequestDispatcher("login.jsp").forward(request, response);
-                        return;
                     }
+
+                    response.sendRedirect("AdminDashboard.jsp");
+                    return;
                 } else {
-                    request.setAttribute("error", "Please enter the complete OTP.");
+                    request.setAttribute("error", "Incorrect or incomplete OTP. Please try again.");
                     request.setAttribute("active", session.getAttribute("adminEmail"));
                     request.getRequestDispatcher("login.jsp").forward(request, response);
                     return;
                 }
-            } else {
-                // No OTP generated yet; handle initial admin OTP request
-                String adminEmail = request.getParameter("adminEmail");
-                if (adminEmail == null || adminEmail.trim().isEmpty()) {
-                    request.setAttribute("error", "Please provide your admin email.");
-                    request.getRequestDispatcher("login.jsp").forward(request, response);
-                    return;
-                }
-                // Generate OTP and send email
-                String otp = generateOTP();
-                final String senderEmail = "kananeloj12@gmail.com";
-                // Google App Password
-                final String senderPassword = "yuok zbhi mhvv hcsv";
-
-                Properties properties = new Properties();
-                properties.put("mail.smtp.auth", "true");
-                properties.put("mail.smtp.starttls.enable", "true");
-                properties.put("mail.smtp.host", "smtp.gmail.com");
-                properties.put("mail.smtp.port", "587");
-
-                Session mailSession = Session.getInstance(properties, new Authenticator() {
-                    @Override
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(senderEmail, senderPassword);
-                    }
-                });
-
-                try {
-                    Message message = new MimeMessage(mailSession);
-                    message.setFrom(new InternetAddress(senderEmail));
-                    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(adminEmail));
-                    message.setSubject("Your Admin OTP Code");
-                    message.setText("Your OTP code is: " + otp);
-                    Transport.send(message);
-                } catch (MessagingException ex) {
-                    ex.printStackTrace();
-                    request.setAttribute("error", "Error sending OTP: " + ex.getMessage());
-                    request.getRequestDispatcher("login.jsp").forward(request, response);
-                    return;
-                }
-
-                // Store OTP and adminEmail in session
-                session.setAttribute("generatedOtp", otp);
-                session.setAttribute("adminEmail", adminEmail);
-                request.setAttribute("success", "OTP has been sent to " + adminEmail);
-                request.setAttribute("active", adminEmail);
-                request.getRequestDispatcher("login.jsp").forward(request, response);
-                return;
             }
-        } else {
-            // Retrieve and trim form parameters
-            String email = request.getParameter("email");
-            String passWd = request.getParameter("password");
 
-            // input validation
-            if (email.isEmpty() || passWd.isEmpty()) {
-                request.setAttribute("error", "Please fill in all fields!");
+            String adminEmail = request.getParameter("adminEmail");
+            if (adminEmail == null || adminEmail.trim().isEmpty()) {
+                request.setAttribute("error", "Please provide your admin email.");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
                 return;
             }
 
+            // Verify that the email belongs to an admin
+            UserService userService = new UserService(conn);
+            User adminUser;
             try {
-                // Use the Service Layer for business logic
-                UserService userService = new UserService(conn);
-                User user = userService.login(email, passWd);
-                // If no record is found, email does not exist
-                if (user == null) {
-                    request.setAttribute("error", "Invalid email or password!");
+                adminUser = userService.getUserByEmail(adminEmail);
+
+                if (adminUser == null || !"admin".equalsIgnoreCase(adminUser.getRoleName())) {
+                    request.setAttribute("error", "Only admins are allowed to request an OTP.");
                     request.getRequestDispatcher("login.jsp").forward(request, response);
+                    return;
                 }
-
-                // Retrieve additional user details and document info
-                int userId = user.getUserId();
-                UserDetail userDetails = userService.getUserDetails(userId);
-                Document document = userService.getDocument(userId);
-
-                // Prevent session fixation by invalidating the current session
-                HttpSession session = request.getSession();
-                session.invalidate();
-                session = request.getSession(true);
-                session.setAttribute("user", user);
-                session.setAttribute("userDetails", userDetails);
-                session.setAttribute("document", document);
-
-                // redirecting based on user role
-                String roleName = user.getRoleName().toLowerCase();
-                switch (roleName) {
-                    case "admin" -> {
-                        response.sendRedirect("AdminDashboard.jsp");
-                    }
-                    case "employer" -> {
-                        // After a successful login for an employer
-                        Company company = userService.getCompany(userId);
-                        session.setAttribute("company", company);
-                        response.sendRedirect("EmployerDashboard.jsp");
-                    }
-                    case "student" -> {
-                        response.sendRedirect("StudentDashboard.jsp");
-                    }
-                    default -> {
-                        response.sendRedirect("login.jsp");
-                    }
-                }
-            } catch (ServletException | IOException | SQLException ex) {
-                request.setAttribute("error", "Database Error: " + ex.getMessage());
+            } catch (SQLException ex) {
+                request.setAttribute("error", "Error verifying user: " + ex.getMessage());
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             }
+
+            // Generate and send OTP
+            String otp = generateOTP();
+            try {
+                NotificationService.sendEmail(
+                        adminEmail,
+                        "Your Admin OTP Code",
+                        "Your OTP code is: " + otp
+                );
+            } catch (MessagingException ex) {
+                throw new ServletException("Error sending OTP email", ex);
+            }
+
+            // Store OTP context in session and prompt user
+            session.setAttribute("generatedOtp", otp);
+            session.setAttribute("adminEmail", adminEmail);
+            request.setAttribute("success", "OTP has been sent to " + adminEmail);
+            request.setAttribute("active", adminEmail);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        }
+
+        // Standard Login
+        // Retrieve and trim form parameters
+        String email = request.getParameter("email");
+        String passWd = request.getParameter("password");
+
+        // input validation
+        if (email.isEmpty() || passWd.isEmpty()) {
+            request.setAttribute("error", "Please fill in all fields!");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        }
+
+        try {
+            // Use the Service Layer for business logic
+            UserService userService = new UserService(conn);
+            User user = userService.login(email, passWd);
+            // If no record is found, email does not exist
+            if (user == null) {
+                request.setAttribute("error", "Invalid email or password!");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+            }
+
+            // Retrieve additional user details and document info
+            int userId = user.getUserId();
+            UserDetail userDetails = userService.getUserDetails(userId);
+            Document document = userService.getDocument(userId);
+
+            // Prevent session fixation by invalidating the current session
+            HttpSession session = request.getSession();
+            session.invalidate();
+            session = request.getSession(true);
+            session.setAttribute("user", user);
+            session.setAttribute("userDetails", userDetails);
+            session.setAttribute("document", document);
+
+            // redirecting based on user role
+            String roleName = user.getRoleName().toLowerCase();
+            switch (roleName) {
+                case "admin" -> {
+                    request.getRequestDispatcher("/AdminDashboard").forward(request, response);
+                }
+                case "employer" -> {
+                    // After a successful login for an employer
+                    Company company = userService.getCompany(userId);
+                    session.setAttribute("company", company);
+                    response.sendRedirect("EmployerDashboard.jsp");
+                }
+                case "student" -> {
+                    response.sendRedirect("StudentDashboard.jsp");
+                }
+                default -> {
+                    response.sendRedirect("login.jsp");
+                }
+            }
+        } catch (ServletException | IOException | SQLException ex) {
+            request.setAttribute("error", "Database Error: " + ex.getMessage());
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 

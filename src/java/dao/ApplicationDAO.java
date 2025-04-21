@@ -92,6 +92,20 @@ public class ApplicationDAO {
         }
     }
 
+    public boolean hasApplied(int studentId, int internshipId) throws SQLException {
+        String query = "SELECT COUNT(*) FROM application WHERE student_id = ? AND internship_id = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, studentId);
+            pstmt.setInt(2, internshipId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+            return false;
+        }
+    }
+
     /**
      * Retrieves an application by its ID.
      *

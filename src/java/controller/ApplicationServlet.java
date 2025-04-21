@@ -24,7 +24,7 @@ import service.ApplicationService;
 import service.InternshipService;
 import service.UserService;
 import utils.ConnectionFile;
-import utils.EmailUtil;
+import utils.NotificationService;
 
 /**
  *
@@ -114,7 +114,7 @@ public class ApplicationServlet extends HttpServlet {
                     emailBody = "Congratulations, Your Internship period has been completed. Welldone on reaching this far!\n\nAutomated System\nApplication ID: " + appId + "\nCareerBridge";
 
                     appService.updateApplication(app);
-                    EmailUtil.sendEmail(recipientEmail, subject, emailBody);
+                    NotificationService.sendEmail(recipientEmail, subject, emailBody);
 
                     request.getRequestDispatcher("StudentDashboard.jsp").forward(request, response);
                     return;
@@ -135,7 +135,7 @@ public class ApplicationServlet extends HttpServlet {
                 }
 
                 appService.updateApplication(app);
-                EmailUtil.sendEmail(recipientEmail, subject, emailBody);
+                NotificationService.sendEmail(recipientEmail, subject, emailBody);
 
             }
         } catch (NumberFormatException | SQLException | MessagingException ex) {
@@ -177,6 +177,19 @@ public class ApplicationServlet extends HttpServlet {
             request.getRequestDispatcher("index.jsp").forward(request, response);
             return;
         }
+        
+        // Check if student has already applied for this internship
+        try {
+            ApplicationDAO applicationDAO = new ApplicationDAO(conn);
+            if (applicationDAO.hasApplied(user.getUserId(), internshipId)) {
+                request.setAttribute("error", "You have already applied for this internship!");
+                request.getRequestDispatcher("StudentDashboard.jsp").forward(request, response);
+                return;
+            }
+        } catch (ServletException | IOException | SQLException ex) {
+            request.setAttribute("error", "Error: " + ex.getMessage());
+            request.getRequestDispatcher("StudentDashboard.jsp").forward(request, response);
+        }
 
         // Processing document uploads.
         String cvUrl = null;
@@ -191,8 +204,8 @@ public class ApplicationServlet extends HttpServlet {
             String cvFileName = Paths.get(cvPart.getSubmittedFileName()).getFileName().toString();
             String cvExtension = cvFileName.substring(cvFileName.lastIndexOf(".") + 1).toLowerCase();
             // Validating allowed extensions (pdf, doc, docx)
-            if (!(cvExtension.equals("pdf") || cvExtension.equals("doc") || cvExtension.equals("docx"))) {
-                request.setAttribute("error", "Invalid CV format. Allowed formats: PDF, DOC, DOCX.");
+            if (!cvExtension.equals("pdf")) {
+                request.setAttribute("error", "Invalid CV format. Only PDF format is allowed");
 
                 // Redirect back to the referring page or a default page.
                 if (referer == null || referer.isEmpty()) {
@@ -264,7 +277,7 @@ public class ApplicationServlet extends HttpServlet {
             request.setAttribute("success", "Application submitted successfully with ID: " + newApplicationId);
             request.getRequestDispatcher("StudentDashboard.jsp").forward(request, response);
             // Send email to applicant
-            EmailUtil.sendEmail(recipientEmail, subject, emailBody);
+            NotificationService.sendEmail(recipientEmail, subject, emailBody);
         } catch (ServletException | IOException | SQLException | MessagingException ex) {
             request.setAttribute("error", "Failed to submit application: " + ex.getMessage());
             request.getRequestDispatcher("StudentDashboard.jsp").forward(request, response);

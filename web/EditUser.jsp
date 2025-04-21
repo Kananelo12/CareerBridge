@@ -123,7 +123,16 @@
                             <input type="text" name="address" id="address" class="form-control" value="${allUsers.address}" required />
                         </div>
                     </div>
-                    <button type="submit" class="globalBtn">Update User</button>
+                    
+                    
+                    <div class="input-group-flex">
+                        <div class="input-group">
+                            <button type="submit" class="globalBtn">Update User</button>
+                        </div>
+                        <div class="input-group">
+                            <button type="button" class="globalBtn" style="background: red;"><a href="AdminDashboard.jsp">Cancel</a></button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </section>
