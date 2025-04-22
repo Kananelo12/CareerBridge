@@ -10,15 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
-import javax.mail.Authenticator;
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import model.Company;
 import model.Document;
 import model.User;
@@ -54,7 +46,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Ensure database connection is available
+        // Checking if database connection is available
         if (conn == null) {
             request.setAttribute("error", "Database connection failed. Try again later.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
@@ -75,7 +67,7 @@ public class LoginServlet extends HttpServlet {
                 }
 
                 if (enteredOtp.length() == 6 && generatedOtp.equals(enteredOtp.toString())) {
-                    // OTP correct: load user details and set in session
+                    // When OTP is correct, load user details and set in session
                     String adminEmail = (String) session.getAttribute("adminEmail");
                     UserDAO userDAO = new UserDAO(conn);
                     User adminUser;
@@ -154,7 +146,6 @@ public class LoginServlet extends HttpServlet {
         }
 
         try {
-            // Use the Service Layer for business logic
             UserService userService = new UserService(conn);
             User user = userService.login(email, passWd);
             // If no record is found, email does not exist
@@ -183,7 +174,6 @@ public class LoginServlet extends HttpServlet {
                     request.getRequestDispatcher("/AdminDashboard").forward(request, response);
                 }
                 case "employer" -> {
-                    // After a successful login for an employer
                     Company company = userService.getCompany(userId);
                     session.setAttribute("company", company);
                     response.sendRedirect("EmployerDashboard.jsp");

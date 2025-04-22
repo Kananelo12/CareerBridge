@@ -32,13 +32,7 @@
     </div>
     <nav class="sidebar__nav">
         <ul class="nav__list">
-            <li class="nav__item active" id="overview">
-                <a href="#" class="nav__link">
-                    <span class="nav__icon"><i class="fas fa-grip"></i></span>
-                    <span class="nav__text">Overview</span>
-                </a>
-            </li>
-            <li class="nav__item" id="internship">
+            <li class="nav__item active" id="internship">
                 <a href="#" class="nav__link">
                     <span class="nav__icon"><i class="fas fa-user-tie"></i></span>
                     <span class="nav__text">Internships</span>
@@ -68,7 +62,13 @@
                 <span class="profile__role">ver. 0.234</span>
             </div>
             <div class="more__settings flex">
-                <div class="dot"><i class="fas fa-ellipsis"></i></div>
+                <div class="dot">
+                    <!-- ======= Toggle Theme button ======= -->
+                    <a href="ThemeToggler" class="themeBtn-secondary flex">
+                        <i class="fas fa-moon"></i>
+                        <i class="fas fa-sun"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

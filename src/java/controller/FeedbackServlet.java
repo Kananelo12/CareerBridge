@@ -97,7 +97,7 @@ public class FeedbackServlet extends HttpServlet {
             internshipId = Integer.parseInt(internshipIdParam);
             studentId = Integer.parseInt(studentIdParam);
         } catch (NumberFormatException ex) {
-            request.setAttribute("error", "Invalid internship or student ID.");
+            request.setAttribute("error", "Invalid internship or student ID!");
             request.getRequestDispatcher("feedback.jsp").forward(request, response);
             return;
         }

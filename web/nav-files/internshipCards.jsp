@@ -91,10 +91,13 @@
         </c:forEach>
     </div>
     <div class="cards__pagination flex__between">
+        <%
+            String referer = request.getHeader("Referer");
+        %>
         <!-- Previous Button: Enabled only if currentPage > 1 -->
         <c:choose>
             <c:when test="${currentPage > 1}">
-                <a href="index.jsp?page=${currentPage - 1}" class="pagination__btn flex">
+                <a href="${referer}?page=${currentPage - 1}" class="pagination__btn flex">
                     <i class="fas fa-arrow-left"></i>
                 </a>
             </c:when>
@@ -110,7 +113,7 @@
         <!-- Next Button: If the number of records fetched equals the limit, assume more pages -->
         <c:choose>
             <c:when test="${fn:length(internshipCards) == limit}">
-                <a href="index.jsp?page=${currentPage + 1}" class="pagination__btn flex">
+                <a href="${referer}?page=${currentPage + 1}" class="pagination__btn flex">
                     <i class="fas fa-arrow-right"></i>
                 </a>
             </c:when>

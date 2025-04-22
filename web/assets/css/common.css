@@ -189,10 +189,26 @@ li {
     box-shadow: var(--box-shadow-01);
     cursor: pointer;
 }
+.themeBtn-secondary {
+    background: var(--bg-color-01);
+    color: var(--text-color-01);
+    padding: 12px;
+    border-radius: 5px 0 0 5px;
+    border: none;
+    outline: none;
+    box-shadow: var(--box-shadow-01);
+    cursor: pointer;
+}
 .themeBtn .fa-sun, .themeBtn.sun .fa-moon {
     display: none;
 }
 .themeBtn.sun .fa-sun {
+    display: block;
+}
+.themeBtn-secondary .fa-sun, .themeBtn.sun .fa-moon {
+    display: none;
+}
+.themeBtn-secondary.sun .fa-sun {
     display: block;
 }
 

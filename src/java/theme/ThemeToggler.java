@@ -39,8 +39,8 @@ public class ThemeToggler extends HttpServlet {
         
         // Create and configure the cookie
         Cookie themeCookie = new Cookie("saved-theme", newTheme);
-        themeCookie.setPath("/"); // Ensure the cookie is available application-wide.
-        themeCookie.setMaxAge(60 * 60 * 24 * 30); // Expires in 30 days.
+        themeCookie.setPath("/");
+        themeCookie.setMaxAge(60 * 60 * 24 * 30);
         response.addCookie(themeCookie);
         
         // Redirect back to the referring page or a default page.

@@ -74,7 +74,13 @@
                 <span class="profile__role">ver. 0.234</span>
             </div>
             <div class="more__settings flex">
-                <div class="dot"><i class="fas fa-ellipsis"></i></div>
+                <div class="dot">
+                    <!-- ======= Toggle Theme button ======= -->
+                    <a href="ThemeToggler" class="themeBtn-secondary flex">
+                        <i class="fas fa-moon"></i>
+                        <i class="fas fa-sun"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

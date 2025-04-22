@@ -25,14 +25,6 @@ public class FeedbackDAO {
         this.conn = conn;
     }
 
-    /**
-     * Inserts a new feedback record into the database. The feedback_date is set
-     * automatically by the database (if defined) or can be omitted.
-     *
-     * @param feedback the Feedback object to insert.
-     * @return the generated feedback ID.
-     * @throws SQLException if any SQL error occurs.
-     */
     public int insertFeedback(Feedback feedback) throws SQLException {
         String sql = "INSERT INTO feedback (student_id, internship_id, rating, comments) VALUES (?, ?, ?, ?)";
         int generatedId = 0;
@@ -55,12 +47,6 @@ public class FeedbackDAO {
         return generatedId;
     }
 
-    /**
-     * Updates an existing feedback record in the database.
-     *
-     * @param feedback the Feedback object with updated values.
-     * @throws SQLException if any SQL error occurs.
-     */
     public void updateFeedback(Feedback feedback) throws SQLException {
         String sql = "UPDATE feedback SET student_id = ?, internship_id = ?, rating = ?, comments = ?, feedback_date = ? "
                 + "WHERE feedback_id = ?";
@@ -80,12 +66,6 @@ public class FeedbackDAO {
         }
     }
 
-    /**
-     * Deletes a feedback record from the database.
-     *
-     * @param feedbackId the ID of the feedback to delete.
-     * @throws SQLException if any SQL error occurs.
-     */
     public void deleteFeedback(int feedbackId) throws SQLException {
         String sql = "DELETE FROM feedback WHERE feedback_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -127,13 +107,6 @@ public class FeedbackDAO {
         return feedbackDetails;
     }
 
-    /**
-     * Retrieves a feedback record by its ID.
-     *
-     * @param feedbackId the feedback ID.
-     * @return a Feedback object, or null if not found.
-     * @throws SQLException if any SQL error occurs.
-     */
     public Feedback getFeedbackById(int feedbackId) throws SQLException {
         Feedback feedback = null;
         String sql = "SELECT * FROM feedback WHERE feedback_id = ?";
@@ -148,13 +121,6 @@ public class FeedbackDAO {
         return feedback;
     }
 
-    /**
-     * Retrieves all feedback records for a given internship.
-     *
-     * @param companyId the internship ID.
-     * @return a list of Feedback objects.
-     * @throws SQLException if any SQL error occurs.
-     */
     public List<Map<String, Object>> getFeedbacksByCompanyId(int companyId) throws SQLException {
         List<Map<String, Object>> feedbackDetails = new ArrayList<>();
         String sql = "SELECT f.*, "
@@ -199,13 +165,6 @@ public class FeedbackDAO {
         return feedbackList;
     }
 
-    /**
-     * Retrieves all feedback records for a given internship.
-     *
-     * @param studentId the internship ID.
-     * @return a list of Feedback objects.
-     * @throws SQLException if any SQL error occurs.
-     */
     public List<Map<String, Object>> getFeedbackDetailsByStudentId(int studentId) throws SQLException {
         List<Map<String, Object>> feedbackDetails = new ArrayList<>();
         String sql = "SELECT f.*, "
@@ -235,13 +194,6 @@ public class FeedbackDAO {
         return feedbackDetails;
     }
 
-    /**
-     * Helper method to map a ResultSet row to a Feedback object.
-     *
-     * @param rs the ResultSet.
-     * @return a Feedback object.
-     * @throws SQLException if any SQL error occurs.
-     */
     private Feedback mapRowToFeedback(ResultSet rs) throws SQLException {
         Feedback feedback = new Feedback();
         feedback.setFeedbackId(rs.getInt("feedback_id"));

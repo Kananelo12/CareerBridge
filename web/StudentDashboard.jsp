@@ -4,6 +4,8 @@
     Author     : kanan
 --%>
 
+<%@page import="model.FeedbackReply"%>
+<%@page import="dao.FeedbackReplyDAO"%>
 <%@page import="model.Feedback"%>
 <%@page import="dao.FeedbackDAO"%>
 <%@page import="model.UserDetail"%>
@@ -47,6 +49,17 @@
     List<Map<String, Object>> feedbackDetails = new FeedbackDAO(conn).getFeedbackDetailsByStudentId(studentId);
     request.setAttribute("feedbackDetails", feedbackDetails);
 
+    FeedbackReplyDAO replyDAO = new FeedbackReplyDAO(conn);
+    Integer feedbackId = (Integer) session.getAttribute("feedbackId");
+
+    if (feedbackId != null) {
+        List<FeedbackReply> feedbackReplies = replyDAO.getRepliesByFeedbackId(feedbackId);
+        request.setAttribute("feedbackReplies", feedbackReplies);
+    } else {
+        List<FeedbackReply> feedbackReplies = replyDAO.getAllReplies();
+        request.setAttribute("feedbackReplies", feedbackReplies);
+    }
+    
     String messageClass = "";
     if (request.getAttribute("error") != null || request.getAttribute("success") != null) {
         messageClass = "active";
@@ -105,85 +118,7 @@
                 <%@include file="./nav-files/studentSidebar.jsp" %>
             </div>
             <div class="dashboard-right-section">
-                <section class="section overview" id="overviewSection">
-                    <div class="card card-w-100 card-one">
-                        <div class="card-content flex__between">
-                            <div class="metric">
-                                <h3 class="card-title">Applications Submitted</h3>
-                                <h4 class="card-subtitle">546</h4>
-                                <div class="metric-badge flex__between">
-                                    <div class="trend flex">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </div>
-                                    <span class="">+33.45%</span>
-                                </div>
-                            </div>
-                            <div class="separator"></div>
-                            <div class="metric">
-                                <h3 class="card-title">Interviews Scheduled</h3>
-                                <h4 class="card-subtitle">546</h4>
-                                <div class="metric-badge flex__between">
-                                    <div class="trend flex">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </div>
-                                    <span class="">+33.45%</span>
-                                </div>
-                            </div>
-                            <div class="separator"></div>
-                            <div class="metric">
-                                <h3 class="card-title">My Listings</h3>
-                                <h4 class="card-subtitle">546</h4>
-                                <div class="metric-badge flex__between">
-                                    <div class="trend flex">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </div>
-                                    <span class="">+33.45%</span>
-                                </div>
-                            </div>
-                            <div class="separator"></div>
-                            <div class="metric">
-                                <h3 class="card-title">My Listings</h3>
-                                <h4 class="card-subtitle">546</h4>
-                                <div class="metric-badge flex__between">
-                                    <div class="trend flex">
-                                        <i class="fas fa-arrow-up"></i>
-                                    </div>
-                                    <span class="">+33.45%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-container bento-grid">
-                        <!-- Chart + Satisfaction + Webinars -->
-                        <div class="card-group flex__between">
-                            <!-- Audience Chart Card -->
-                            <div class="card card-chart">
-                                <h3 class="card-title">Audience</h3>
-                                <canvas id="statsChart"></canvas>
-                                <p class="metric-change">+58.31% for 7 last days</p>
-                            </div>
-
-                            <!-- Gauge/Satisfaction Card -->
-                            <div class="card card-gauge">
-                                <h3 class="card-title">Audience Satisfaction</h3>
-                                <div class="gauge-container">
-                                    <!-- You can use a radial progress plugin here -->
-                                    <span class="gauge-percentage">76.7%</span>
-                                </div>
-                                <p class="gauge-note">Based on likes / dislikes</p>
-                            </div>
-
-                            <!-- Promo/Webinar Card -->
-                            <div class="card card-promo">
-                                <h3 class="card-title">Webinars</h3>
-                                <p class="promo-text">Learn how you can earn more than 20% each month!</p>
-                                <button class="btn-learn-more">Learn More</button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="section hidden" id="internshipSection">
+                <section class="section overview" id="internshipSection">
                     <%@include file="./nav-files/internshipCards.jsp" %>
                 </section>
 
@@ -264,6 +199,32 @@
                                         </tr>
                                     </c:forEach>
 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="container">
+                        <h2 class="table-title">Replies to feedback</h2>
+                        <div class="responsive-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#ID</th>
+                                        <th>Feedback ID</th>
+                                        <th>Reply Text</th>
+                                        <th>Reply Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="reply" items="${feedbackReplies}">
+                                        <tr>
+                                            <td>${reply.replyId}</td>
+                                            <td>${reply.feedbackId}</td>
+                                            <td>${reply.replyText}</td>
+                                            <td>${reply.replyDate}</td>
+                                        </tr>
+                                    </c:forEach>
                                 </tbody>
                             </table>
                         </div>

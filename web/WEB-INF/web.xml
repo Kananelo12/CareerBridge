@@ -40,6 +40,10 @@
         <servlet-name>EditCompanyServlet</servlet-name>
         <servlet-class>controller.EditCompanyServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ReplyFeedbackServlet</servlet-name>
+        <servlet-class>controller.ReplyFeedbackServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -80,6 +84,10 @@
     <servlet-mapping>
         <servlet-name>EditCompanyServlet</servlet-name>
         <url-pattern>/EditCompanyServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReplyFeedbackServlet</servlet-name>
+        <url-pattern>/ReplyFeedbackServlet</url-pattern>
     </servlet-mapping>
     <error-page>
         <error-code>404</error-code>

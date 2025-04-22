@@ -4,6 +4,8 @@
     Author     : kanan
 --%>
 
+<%@page import="model.FeedbackReply"%>
+<%@page import="dao.FeedbackReplyDAO"%>
 <%@page import="dao.FeedbackDAO"%>
 <%@page import="java.util.Map"%>
 <%@page import="dao.ApplicationDAO"%>
@@ -54,6 +56,17 @@
 
     List<Map<String, Object>> feedback = new FeedbackDAO(conn).getFeedbacksByCompanyId(companyId);
     request.setAttribute("feedbackDetails", feedback);
+
+    FeedbackReplyDAO replyDAO = new FeedbackReplyDAO(conn);
+    Integer feedbackId = (Integer) session.getAttribute("feedbackId");
+
+    if (feedbackId != null) {
+        List<FeedbackReply> feedbackReplies = replyDAO.getRepliesByFeedbackId(feedbackId);
+        request.setAttribute("feedbackReplies", feedbackReplies);
+    } else {
+        List<FeedbackReply> feedbackReplies = replyDAO.getAllReplies();
+        request.setAttribute("feedbackReplies", feedbackReplies);
+    }
 
     String messageClass = "";
     if (request.getAttribute("error") != null || request.getAttribute("success") != null) {
@@ -128,25 +141,38 @@
 
                         <div class="card-container flex__between">
                             <div class="card-item">
+                                <%
+                                    int internCount = internUsers.size();
+                                    request.setAttribute("internUserCount", internCount);
+                                %>
                                 <div class="item-title">
-                                    <img src="./assets/images/calendar-check.png" alt="Card Icon" />
-                                    <span>94</span>
+                                    <img src="./assets/images/intern-student.png" alt="Card Icon" />
+                                    <span>${internUserCount}</span>
                                 </div>
-                                <p class="item-text">Total number of  scheduled appointments</p>
+                                <c:set var="companyName" value="${applications[0].companyName}" />
+                                <p class="item-text">Total number of accepted interns at ${companyName}</p>
                             </div>
                             <div class="card-item">
+                                <%
+                                    int applicationCount = applications.size();
+                                    request.setAttribute("applicationCount", applicationCount);
+                                %>
                                 <div class="item-title">
                                     <img src="./assets/images/hourglass.png" alt="Card Icon" />
-                                    <span>32</span>
+                                    <span>${applicationCount}</span>
                                 </div>
-                                <p class="item-text">Total number of  scheduled appointments</p>
+                                <p class="item-text">Total number of  pending applications</p>
                             </div>
                             <div class="card-item">
+                                <%
+                                    int internshipCount = internships.size();
+                                    request.setAttribute("internshipCount", internshipCount);
+                                %>
                                 <div class="item-title">
-                                    <img src="./assets/images/alert-triangle.png" alt="Card Icon" />
-                                    <span>56</span>
+                                    <img src="./assets/images/internship-count.png" alt="Card Icon" />
+                                    <span>${internshipCount}</span>
                                 </div>
-                                <p class="item-text">Total number of  scheduled appointments</p>
+                                <p class="item-text">Total number of internship opportunities posted</p>
                             </div>
                         </div>
 
@@ -187,7 +213,7 @@
                                                         </td>
                                                     </c:otherwise>
                                                 </c:choose>
-                                                <td>${internRecord.userDetails.email}</td>
+                                                <td>${internRecord.email}</td>
                                                 <td>${internRecord.userDetails.phoneNumber}</td>
                                                 <td>${internRecord.userDetails.address}</td>
                                                 <td class="actions">
@@ -279,8 +305,8 @@
                                             <td>${app.applicationId}</td>
                                             <td>${row.studentName}</td>
                                             <td>${row.companyName}</td>
-                                            <td><a href="${app.cvUrl}" id="downloadBtn" target="_blank">View CV</a></td>
-                                            <td><a href="${app.transcriptUrl}" id="downloadBtn" target="_blank">View Transcript</a></td>
+                                            <td><a href="${app.cvUrl}" id="downloadBtn" data-file-url="${app.cvUrl}" target="_blank">View CV</a></td>
+                                            <td><a href="${app.transcriptUrl}" id="downloadBtn" data-file-url="${app.transcriptUrl}" target="_blank">View Transcript</a></td>
                                             <td>${app.applicationDate}</td>
                                             <td class="badge">${app.status}</td>
                                             <td class="actions">
@@ -310,6 +336,7 @@
                                         <th>Rating</th>
                                         <th>Comments</th>
                                         <th>Date</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -321,9 +348,43 @@
                                             <td>${record.feedback.rating}</td>
                                             <td>${record.feedback.comments}</td>
                                             <td>${record.feedback.feedbackDate}</td>
+                                            <td>
+                                                <a href="" 
+                                                   class="btn edit-btn replyButton"
+                                                   data-feedback-id="${record.feedback.feedbackId}"
+                                                   data-student-name="${record.student_name}">
+                                                    <i class="fas fa-reply" ></i>
+                                                </a>
+                                            </td>
                                         </tr>
                                     </c:forEach>
 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="container">
+                        <h2 class="table-title">Replies to feedback</h2>
+                        <div class="responsive-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#ID</th>
+                                        <th>Feedback ID</th>
+                                        <th>Reply Text</th>
+                                        <th>Reply Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="reply" items="${feedbackReplies}">
+                                        <tr>
+                                            <td>${reply.replyId}</td>
+                                            <td>${reply.feedbackId}</td>
+                                            <td>${reply.replyText}</td>
+                                            <td>${reply.replyDate}</td>
+                                        </tr>
+                                    </c:forEach>
                                 </tbody>
                             </table>
                         </div>
@@ -453,9 +514,32 @@
             </div>
         </div>
 
+        <!--======= Feedback Reply Modal =======-->
+        <div class="modal__overlay flex" id="feedbackModal">
+            <div class="modal feedback__modal" style="max-width: 600px;">
+                <form action="ReplyFeedbackServlet" method="POST" class="global-form">
+                    <input type="hidden" name="feedbackIdHdn" id="modalFeedbackId" />
+
+                    <div class="modal__title flex" style="margin-bottom: 1.3rem;" id="closeFeedbackModal">
+                        <h3 class="form-title" id="reply-title">Reply to student feedback</h3>
+                        <div class="close__modal__btn flex">
+                            <i class="fas fa-close"></i>
+                        </div>
+                    </div>
+                    <div class="modal__body">
+                        <div class="input-group">
+                            <label for="replyText" class="form-label">Reply Comments</label>
+                            <textarea class="form-control" name="replyText" id="replyText" placeholder="Type your reply…"></textarea>
+                        </div>
+                        <button type="submit" class="globalBtn">Reply</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!--======= File Frame Modal =======-->
         <div class="modal__overlay flex" id="fileFrame">
-            <div class="modal frame_modal" style="max-width: 800px;">
+            <div class="modal frame_modal" style="max-width: 1000px;">
                 <div class="modal__title flex" style="margin-bottom: 1.3rem;" id="closeFileFrame">
                     <div class="close__modal__btn flex">
                         <i class="fas fa-close"></i>
@@ -465,7 +549,7 @@
                 <div class="modal__body">
                     <embed 
                         class="pdf" 
-                        src="${app.cvUrl}"
+                        id="fileEmbed"
                         type="application/pdf"
                         />
                 </div>
@@ -491,18 +575,48 @@
 
             });
 
+            const replyButtons = document.querySelectorAll(".replyButton");
+            const feedbackModal = document.getElementById("feedbackModal");
+            const replyFeedbackIdField = document.getElementById("modalFeedbackId");
+            const replyTitleField = document.getElementById("reply-title");
+            const closeFeedbackBtn = document.getElementById("closeFeedbackModal");
+
+            replyButtons.forEach((replyBtn) => {
+                replyBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+
+                    const feedbackId = replyBtn.dataset.feedbackId;
+                    const student = replyBtn.dataset.studentName;
+                    replyFeedbackIdField.value = feedbackId;
+                    replyTitleField.textContent = 'Reply to ' + student + '\'s feedback';
+                    console.log("Student: " + student);
+                    console.log("h3 element text: " + replyTitleField.textContent);
+
+                    feedbackModal.classList.add("active");
+                });
+            });
+
+            closeFeedbackBtn.addEventListener("click", () => {
+                feedbackModal.classList.remove("active");
+            });
+
             const downloadButtons = document.querySelectorAll("#downloadBtn");
             const closeFrameBtn = document.getElementById("closeFileFrame");
             const frame = document.getElementById("fileFrame");
+            const fileModal = document.getElementById("fileEmbed");
+            
             downloadButtons.forEach((downloadBtn) => {
                 downloadBtn.addEventListener("click", (e) => {
                     e.preventDefault();
+                    const fileUrl = downloadBtn.getAttribute("data-file-url");
+                    fileModal.src = fileUrl;
                     frame.classList.add("active");
                 });
             });
 
             closeFrameBtn.addEventListener("click", () => {
                 frame.classList.remove("active");
+                fileModal.src = "";
             });
         </script>
         <script src="./assets/js/utilities.js"></script>
