@@ -76,8 +76,7 @@ public class InternshipServlet extends HttpServlet {
             hasErrors = true;
             errorList += "\nLocation cannot be empty!";
         }
-
-        // If there are validation errors, send back an error response
+        
         if (hasErrors) {
             request.setAttribute("error", errorList);
             request.getRequestDispatcher("EmployerDashboard.jsp").forward(request, response);
@@ -96,13 +95,12 @@ public class InternshipServlet extends HttpServlet {
         internship.setRequirements(requirements);
         internship.setStatus("open");
 
-        // Insert it into the database
+        
         try {
-            // Instantiate the InternshipService and create the internship record.
+            // Create the internship record.
             InternshipService internshipService = new InternshipService(conn);
             int internshipId = internshipService.createInternship(internship);
-
-            // Set a success message and forward back to the EmployerDashboard.
+            
             request.setAttribute("success", "Internship created successfully with ID: " + internshipId);
             request.getRequestDispatcher("EmployerDashboard.jsp").forward(request, response);
 

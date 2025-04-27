@@ -20,29 +20,29 @@ public class UserDetailDAO {
 
     public void insertUserDetails(UserDetail details) throws SQLException {
         String query = "INSERT INTO userdetails (user_id, firstName, lastName, email, phoneNumber, address, profileImageUrl) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement ps = conn.prepareStatement(query);
-        ps.setInt(1, details.getUserId());
-        ps.setString(2, details.getFirstName());
-        ps.setString(3, details.getLastName());
-        ps.setString(4, details.getEmail());
-        ps.setString(5, details.getPhoneNumber());
-        ps.setString(6, details.getAddress());
-        ps.setString(7, details.getProfileImageUrl());
-        ps.executeUpdate();
-        ps.close();
+        PreparedStatement pstmt = conn.prepareStatement(query);
+        pstmt.setInt(1, details.getUserId());
+        pstmt.setString(2, details.getFirstName());
+        pstmt.setString(3, details.getLastName());
+        pstmt.setString(4, details.getEmail());
+        pstmt.setString(5, details.getPhoneNumber());
+        pstmt.setString(6, details.getAddress());
+        pstmt.setString(7, details.getProfileImageUrl());
+        pstmt.executeUpdate();
+        pstmt.close();
     }
 
     public void updateUserDetails(UserDetail details) throws SQLException {
         String sql = "UPDATE userdetails SET firstName = ?, lastName = ?, email = ?, phoneNumber = ?, address = ?, profileImageUrl = ? WHERE user_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, details.getFirstName());
-            stmt.setString(2, details.getLastName());
-            stmt.setString(3, details.getEmail());
-            stmt.setString(4, details.getPhoneNumber());
-            stmt.setString(5, details.getAddress());
-            stmt.setString(6, details.getProfileImageUrl());
-            stmt.setInt(7, details.getUserId());
-            stmt.executeUpdate();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, details.getFirstName());
+            pstmt.setString(2, details.getLastName());
+            pstmt.setString(3, details.getEmail());
+            pstmt.setString(4, details.getPhoneNumber());
+            pstmt.setString(5, details.getAddress());
+            pstmt.setString(6, details.getProfileImageUrl());
+            pstmt.setInt(7, details.getUserId());
+            pstmt.executeUpdate();
         }
     }
 

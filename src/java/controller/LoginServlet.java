@@ -159,7 +159,7 @@ public class LoginServlet extends HttpServlet {
             UserDetail userDetails = userService.getUserDetails(userId);
             Document document = userService.getDocument(userId);
 
-            // Prevent session fixation by invalidating the current session
+            // Invalidating current session
             HttpSession session = request.getSession();
             session.invalidate();
             session = request.getSession(true);

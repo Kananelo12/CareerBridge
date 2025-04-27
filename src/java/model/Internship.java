@@ -24,7 +24,7 @@ public class Internship implements Serializable {
 
     // formatted date for the presentation layer
     private Date postedDateAsDate;
-    
+
     // No-argument constructor
     public Internship() {
     }
@@ -130,7 +130,7 @@ public class Internship implements Serializable {
     public void setCompany(Company company) {
         this.company = company;
     }
-    
+
     public Date getPostedDateAsDate() {
         return postedDateAsDate;
     }

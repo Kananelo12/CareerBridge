@@ -97,11 +97,11 @@ public class Company implements Serializable {
     public void setContactInfo(String contactInfo) {
         this.contactInfo = contactInfo;
     }
-    
+
     public Internship getInternship() {
         return internship;
     }
-    
+
     public void setInternship(Internship internship) {
         this.internship = internship;
     }

@@ -46,8 +46,9 @@ public class ApplicationServlet extends HttpServlet {
 
     @Override
     public void init() {
-        // Set relative paths for images and documents
+        // Relative paths for images and documents
         TEMP_STUDENT_DIRECTORY = getServletContext().getRealPath("/uploads/studentdocs");
+        // Extract 'build' from path, to target project root directory
         finalStudentPath = TEMP_STUDENT_DIRECTORY.replace("build" + File.separator, "");
 
         try {
@@ -142,7 +143,6 @@ public class ApplicationServlet extends HttpServlet {
             request.setAttribute("error", "Failed to update application: " + ex.getMessage());
         }
 
-        // Forward back to dashboard regardless of outcome
         request.getRequestDispatcher("EmployerDashboard.jsp").forward(request, response);
     }
 
@@ -198,7 +198,7 @@ public class ApplicationServlet extends HttpServlet {
         // for redirecting back to the page that made the request
         String referer = request.getHeader("Referer");
 
-        // Process CV upload (optional)
+        // Process CV upload
         Part cvPart = request.getPart("cv");
         if (cvPart != null && cvPart.getSize() > 0) {
             String cvFileName = Paths.get(cvPart.getSubmittedFileName()).getFileName().toString();
@@ -222,10 +222,10 @@ public class ApplicationServlet extends HttpServlet {
             }
             String cvPath = finalStudentPath + File.separator + uniqueCVName;
             cvPart.write(cvPath);
-            cvUrl = "uploads/studentdocs/" + uniqueCVName; // Use relative URL for your web app.
+            cvUrl = "uploads/studentdocs/" + uniqueCVName;
         }
 
-        // Process Transcript upload (required)
+        // Process Transcript upload
         Part transcriptPart = request.getPart("transcript");
         if (transcriptPart != null && transcriptPart.getSize() > 0) {
             String transcriptFileName = Paths.get(transcriptPart.getSubmittedFileName()).getFileName().toString();

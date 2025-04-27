@@ -1,21 +1,24 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  *
  * @author kanan
  */
-public class Feedback {
+public class Feedback implements Serializable {
+
     private int feedbackId;
     private int studentId;
     private int internshipId;
     private String rating;
     private String comments;
     private LocalDateTime feedbackDate;
-    
+
     // No-arguments constructor
-    public Feedback() {}
+    public Feedback() {
+    }
 
     public Feedback(int feedbackId, int studentId, int internshipId, String rating, String comments, LocalDateTime feedbackDate) {
         this.feedbackId = feedbackId;
@@ -73,7 +76,5 @@ public class Feedback {
     public void setFeedbackDate(LocalDateTime feedbackDate) {
         this.feedbackDate = feedbackDate;
     }
-    
-    
-    
+
 }

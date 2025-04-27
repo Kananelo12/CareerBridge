@@ -59,8 +59,7 @@ public class AdminDashboardServlet extends HttpServlet {
             // last 7 days
             List<DayCount> series = svc.getDailyApplicationCounts(7);
             session.setAttribute("dailyAppCounts", series);
-
-            // redirect to JSP (not forward)
+            
             response.sendRedirect("AdminDashboard.jsp");
 
         } catch (SQLException ex) {

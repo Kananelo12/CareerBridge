@@ -22,7 +22,7 @@ public class ThemeToggler extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Default to light theme if no cookie is found.
+        // if no cookie, default theme
         String currentTheme = "";
         
         Cookie[] cookies = request.getCookies();
@@ -34,7 +34,8 @@ public class ThemeToggler extends HttpServlet {
                 }
             }
         }
-        // 
+        
+        // Negate theme to toggle it
         String newTheme = "dark-theme".equals(currentTheme) ? "" : "dark-theme";
         
         // Create and configure the cookie

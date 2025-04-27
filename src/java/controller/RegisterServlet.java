@@ -49,6 +49,7 @@ public class RegisterServlet extends HttpServlet {
         // Set relative paths for images and documents
         TEMP_IMAGE_DIRECTORY = getServletContext().getRealPath("/uploads/images");
         TEMP_DOCS_DIRECTORY = getServletContext().getRealPath("/uploads/documents");
+        // Extract 'build' from the path to target project root directory
         finalImgPath = TEMP_IMAGE_DIRECTORY.replace("build" + File.separator, "");
         finalDocPath = TEMP_DOCS_DIRECTORY.replace("build" + File.separator, "");
 
@@ -80,8 +81,7 @@ public class RegisterServlet extends HttpServlet {
         String phoneNumber = request.getParameter("phoneNumber");
         String address = request.getParameter("address");
         String roleType = request.getParameter("roleType");
-
-        // Handle file upload (profile image) -- Optional
+        
         String dbImagePath = null;
 
         Part imageFilePart = request.getPart("profileImageUrl");
@@ -104,15 +104,14 @@ public class RegisterServlet extends HttpServlet {
             // Save the file to disk
             String imagePath = finalImgPath + File.separator + uniqueImageName;
             imageFilePart.write(imagePath);
-            // Set the relative path to be saved in the database (for later retrieval)
-            // (You might choose to store the absolute path in production, but here we assume relative)
+            // Image relative path
             dbImagePath = "uploads/images/" + uniqueImageName;
         }
 
         boolean hasErrors = false;
         String errorMessage = "";
 
-        // Split fullnames to get first and last names
+        // Split fullnames into first and last names
         String firstName = "";
         String lastName = "";
         if (fullnames != null && !fullnames.trim().isEmpty()) {
@@ -123,7 +122,7 @@ public class RegisterServlet extends HttpServlet {
                 return;
             } else {
                 firstName = nameParts[0];
-                // Combine any remaining parts into the last name in case of compound surnames
+                // Combine any remaining parts into the last name
                 StringBuilder builder = new StringBuilder();
                 for (int i = 1; i < nameParts.length; i++) {
                     builder.append(nameParts[i]).append(" ");
@@ -173,7 +172,7 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        // For employer registration, handle company fields,
+        // Employer mode: registre company
         // document upload and validation
         Company company = null;
         Document document = null;
@@ -216,7 +215,7 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
-            // get the logo file and upload the path
+            // get the logo file and upload path
             if (logoFilePart != null && logoFilePart.getSize() > 0) {
                 String logoName = Paths.get(logoFilePart.getSubmittedFileName()).getFileName().toString();
                 String logoExtension = logoName.substring(logoName.lastIndexOf(".") + 1).toLowerCase();
@@ -236,7 +235,7 @@ public class RegisterServlet extends HttpServlet {
                 dbLogoPath = "uploads/images/" + uniqueLogoName;
             }
 
-            // get the document file and upload the path
+            // get the document file and upload path
             if (documentFilePart != null && documentFilePart.getSize() > 0) {
                 String docName = Paths.get(documentFilePart.getSubmittedFileName()).getFileName().toString();
                 String docExtension = docName.substring(docName.lastIndexOf(".") + 1).toLowerCase();
@@ -270,12 +269,13 @@ public class RegisterServlet extends HttpServlet {
             document.setDocumentUrl(dbDocPath);
         }
 
-        // Hash the password using BCrypt (ensure jBCrypt is added as a dependency)
+        // Hashing passwords with BCrypt Algorithm
         String hashedPassword = BCrypt.hashpw(passWd, BCrypt.gensalt());
 
-        // Determine role_id by querying the roles table.
-        int roleId = 3; // default to student.
+        // Default role id is student
+        int roleId = 3;
 
+        // Determine actual role_id from database
         try {
             String roleQuery = "SELECT role_id FROM roles WHERE rolename = ?";
             PreparedStatement psRole = conn.prepareStatement(roleQuery);

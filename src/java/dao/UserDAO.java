@@ -44,10 +44,10 @@ public class UserDAO {
 
     public void updateUser(User user) throws SQLException {
         String sql = "UPDATE users SET email = ? WHERE user_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getEmail());
-            stmt.setInt(2, user.getUserId());
-            stmt.executeUpdate();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, user.getEmail());
+            pstmt.setInt(2, user.getUserId());
+            pstmt.executeUpdate();
         }
     }
 
@@ -110,7 +110,7 @@ public class UserDAO {
                 + "JOIN userdetails d ON u.user_id = d.user_id "
                 + "JOIN roles r ON u.role_id = r.role_id";
 
-        try (Connection conn = ConnectionFile.getConn(); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = ConnectionFile.getConn(); PreparedStatement pstmt = conn.prepareStatement(query); ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 User user = new User();
@@ -140,18 +140,6 @@ public class UserDAO {
         return users;
     }
 
-    /**
-     * Retrieves a list of users (students) who are assigned as interns (i.e.
-     * where internship.student_id is set) and whose internship belongs to a
-     * particular company.
-     *
-     * The query joins the users, userdetails, and internship tables. You may
-     * adjust the column names if they differ in your schema.
-     *
-     * @param companyId the employer's company ID.
-     * @return a list of User objects.
-     * @throws SQLException if any SQL error occurs.
-     */
     public List<User> getInternUsersByCompany(int companyId) throws SQLException {
         List<User> users = new ArrayList<>();
         String query
@@ -162,9 +150,9 @@ public class UserDAO {
                 + "JOIN internship i ON u.user_id = i.student_id "
                 + "WHERE i.company_id = ?";
 
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, companyId);
-            try (ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setInt(1, companyId);
+            try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     User user = new User();
                     user.setUserId(rs.getInt("user_id"));
@@ -194,8 +182,8 @@ public class UserDAO {
                 + "JOIN userdetails ud ON u.user_id = ud.user_id "
                 + "JOIN internship i ON u.user_id = i.student_id ";
 
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            try (ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     User user = new User();
                     user.setUserId(rs.getInt("user_id"));

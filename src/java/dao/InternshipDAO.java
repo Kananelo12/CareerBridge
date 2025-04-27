@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
 import java.sql.Timestamp;
@@ -60,16 +56,16 @@ public class InternshipDAO {
     public void updateInternship(Internship internship) throws SQLException {
         String sql = "UPDATE internship SET company_id = ?, title = ?, location = ?, description = ?, posted_date = ?, requirements = ?, status = ? "
                 + "WHERE internship_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, internship.getCompanyId());
-            stmt.setString(2, internship.getTitle());
-            stmt.setString(3, internship.getLocation());
-            stmt.setString(4, internship.getDescription());
-            stmt.setTimestamp(5, Timestamp.valueOf(internship.getPostedDate()));
-            stmt.setString(6, internship.getRequirements());
-            stmt.setString(7, internship.getStatus());
-            stmt.setInt(8, internship.getInternshipId());
-            stmt.executeUpdate();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, internship.getCompanyId());
+            pstmt.setString(2, internship.getTitle());
+            pstmt.setString(3, internship.getLocation());
+            pstmt.setString(4, internship.getDescription());
+            pstmt.setTimestamp(5, Timestamp.valueOf(internship.getPostedDate()));
+            pstmt.setString(6, internship.getRequirements());
+            pstmt.setString(7, internship.getStatus());
+            pstmt.setInt(8, internship.getInternshipId());
+            pstmt.executeUpdate();
         }
     }
     
@@ -85,9 +81,9 @@ public class InternshipDAO {
 
     public void deleteInternship(int internshipId) throws SQLException {
         String sql = "DELETE FROM internship WHERE internship_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, internshipId);
-            stmt.executeUpdate();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, internshipId);
+            pstmt.executeUpdate();
         }
     }
 
@@ -124,9 +120,9 @@ public class InternshipDAO {
         String sql = "SELECT i.*, c.company_name, c.logo_url FROM internship i "
                 + "JOIN company c ON i.company_id = c.company_id "
                 + "WHERE internship_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, internshipId);
-            try (ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, internshipId);
+            try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return mapRowToInternship(rs);
                 }
@@ -142,10 +138,10 @@ public class InternshipDAO {
                 + "JOIN company c ON i.company_id = c.company_id "
                 + "ORDER BY i.posted_date DESC LIMIT ? OFFSET ?";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, limit);
-            stmt.setInt(2, offset);
-            try (ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, limit);
+            pstmt.setInt(2, offset);
+            try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     internships.add(mapRowToInternship(rs));
                 }
@@ -159,9 +155,9 @@ public class InternshipDAO {
         String sql = "SELECT i.*, c.company_name, c.logo_url FROM internship i "
                 + "JOIN company c ON i.company_id = c.company_id"
                 + " WHERE i.company_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, companyId);
-            try (ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, companyId);
+            try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     internships.add(mapRowToInternship(rs));
                 }
@@ -176,10 +172,10 @@ public class InternshipDAO {
                 + "FROM internship i "
                 + "JOIN company c ON i.company_id = c.company_id "
                 + "ORDER BY i.posted_date DESC LIMIT ? OFFSET ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, limit);
-            stmt.setInt(2, offset);
-            try (ResultSet rs = stmt.executeQuery()) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, limit);
+            pstmt.setInt(2, offset);
+            try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     Internship internship = mapRowToInternship(rs);
                     // Populate company fields manually

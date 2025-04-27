@@ -63,8 +63,7 @@ public class EditInternshipServlet extends HttpServlet {
             } catch (SQLException | NumberFormatException ex) {
                 request.setAttribute("error", "Failed to delete internship: " + ex.getMessage());
             }
-
-            // Forward back to dashboard regardless of outcome
+            
             request.getRequestDispatcher("EmployerDashboard.jsp").forward(request, response);
         } else {
             try {

@@ -55,7 +55,7 @@ public class FeedbackDAO {
             stmt.setInt(2, feedback.getInternshipId());
             stmt.setString(3, feedback.getRating());
             stmt.setString(4, feedback.getComments());
-            // If feedbackDate is provided, use it; otherwise, set to current timestamp.
+            
             if (feedback.getFeedbackDate() != null) {
                 stmt.setTimestamp(5, Timestamp.valueOf(feedback.getFeedbackDate()));
             } else {
@@ -91,8 +91,7 @@ public class FeedbackDAO {
         try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Map<String, Object> row = new HashMap<>();
-
-                // Map the core Feedback bean
+                
                 Feedback fb = mapRowToFeedback(rs);
                 row.put("feedback", fb);
 
@@ -136,7 +135,7 @@ public class FeedbackDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> row = new HashMap<>();
-                    // Map row to Feedback bean using your existing method
+                   
                     Feedback feedback = mapRowToFeedback(rs);
                     row.put("feedback", feedback);
                     // Add extra fields from the join
@@ -180,7 +179,7 @@ public class FeedbackDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> row = new HashMap<>();
-                    // Map row to Feedback bean using your existing method
+                    // Map row to Feedback
                     Feedback feedback = mapRowToFeedback(rs);
                     row.put("feedback", feedback);
                     // Add extra fields from the join

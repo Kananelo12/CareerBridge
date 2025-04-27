@@ -1,12 +1,13 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  *
  * @author kanan
  */
-public class Application {
+public class Application implements Serializable {
     private int applicationId;
     private int studentId;
     private int internshipId;
@@ -19,7 +20,6 @@ public class Application {
     public Application() {}
     
     // Parameterized constructor
-
     public Application(int applicationId, int studentId, int internshipId, String cvUrl, String transcriptUrl, LocalDateTime applicationDate, String status) {
         this.applicationId = applicationId;
         this.studentId = studentId;

@@ -8,13 +8,15 @@ import java.time.LocalDateTime;
  * @author kanan
  */
 public class FeedbackReply implements Serializable {
+
     private int replyId;
     private int feedbackId;
     private String replyText;
     private LocalDateTime replyDate;
 
-    public FeedbackReply() {}
-    
+    public FeedbackReply() {
+    }
+
     public FeedbackReply(int replyId, int feedbackId, String replyText, LocalDateTime replyDate) {
         this.replyId = replyId;
         this.feedbackId = feedbackId;
@@ -53,6 +55,5 @@ public class FeedbackReply implements Serializable {
     public void setReplyDate(LocalDateTime replyDate) {
         this.replyDate = replyDate;
     }
-    
-    
+
 }

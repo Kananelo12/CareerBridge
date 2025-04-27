@@ -28,13 +28,6 @@ public class ApplicationDAO {
         this.conn = conn;
     }
 
-    /**
-     * Inserts a new application into the database.
-     *
-     * @param application the Application object to insert.
-     * @return the generated application ID.
-     * @throws SQLException if any SQL error occurs.
-     */
     public int insertApplication(Application application) throws SQLException {
         String sql = "INSERT INTO application (student_id, internship_id, cv_url, transcript_url) VALUES (?, ?, ?, ?)";
         int generatedId = 0;
@@ -57,12 +50,6 @@ public class ApplicationDAO {
         return generatedId;
     }
 
-    /**
-     * Updates an existing application record.
-     *
-     * @param application the Application object with updated values.
-     * @throws SQLException if any SQL error occurs.
-     */
     public void updateApplication(Application application) throws SQLException {
         String sql = "UPDATE application SET student_id = ?, internship_id = ?, cv_url = ?, transcript_url = ?, application_date = ?, status = ? "
                 + "WHERE application_id = ?";
@@ -78,12 +65,6 @@ public class ApplicationDAO {
         }
     }
 
-    /**
-     * Deletes an application record from the database.
-     *
-     * @param applicationId the ID of the application to delete.
-     * @throws SQLException if any SQL error occurs.
-     */
     public void deleteApplication(int applicationId) throws SQLException {
         String sql = "DELETE FROM application WHERE application_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -106,13 +87,6 @@ public class ApplicationDAO {
         }
     }
 
-    /**
-     * Retrieves an application by its ID.
-     *
-     * @param applicationId the application ID.
-     * @return an Application object, or null if not found.
-     * @throws SQLException if any SQL error occurs.
-     */
     public Application getApplicationById(int applicationId) throws SQLException {
         Application application = null;
         String sql = "SELECT * FROM application WHERE application_id = ?";
@@ -126,14 +100,7 @@ public class ApplicationDAO {
         }
         return application;
     }
-
-    /**
-     * Retrieves all applications for a given internship.
-     *
-     * @param internshipId the internship ID.
-     * @return a list of Application objects.
-     * @throws SQLException if any SQL error occurs.
-     */
+    
     public List<Application> getApplicationsByInternshipId(int internshipId) throws SQLException {
         List<Application> applications = new ArrayList<>();
         String sql = "SELECT * FROM application WHERE internship_id = ?";
@@ -228,13 +195,6 @@ public class ApplicationDAO {
         return applications;
     }
 
-    /**
-     * Maps a ResultSet row to an Application object.
-     *
-     * @param rs the ResultSet.
-     * @return an Application object.
-     * @throws SQLException if any SQL error occurs.
-     */
     private Application mapRowToApplication(ResultSet rs) throws SQLException {
         Application application = new Application();
         application.setApplicationId(rs.getInt("application_id"));
