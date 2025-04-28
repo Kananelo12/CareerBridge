@@ -70,10 +70,12 @@ public class LoginServlet extends HttpServlet {
                     // When OTP is correct, load user details and set in session
                     String adminEmail = (String) session.getAttribute("adminEmail");
                     UserDAO userDAO = new UserDAO(conn);
-                    User adminUser;
+                    UserDetail adminUser;
                     try {
-                        adminUser = userDAO.getUserByEmail(adminEmail);
-                        session.setAttribute("user", adminUser);
+                        User user = userDAO.getUserByEmail(adminEmail);
+                        adminUser = userDAO.getUserDetailByEmail(adminEmail);
+                        session.setAttribute("user", user);
+                        session.setAttribute("userDetails", adminUser);
                     } catch (SQLException ex) {
                         request.setAttribute("error", "Error verifying user: " + ex.getMessage());
                         request.getRequestDispatcher("login.jsp").forward(request, response);

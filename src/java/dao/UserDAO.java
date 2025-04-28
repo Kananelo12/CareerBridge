@@ -100,6 +100,25 @@ public class UserDAO {
         }
         return null;
     }
+    
+    public UserDetail getUserDetailByEmail(String email) throws SQLException {
+        String query = "SELECT u.user_id, u.role_id, ud.*, r.rolename FROM users u JOIN roles r ON u.role_id = r.role_id JOIN userdetails ud ON u.user_id = ud.user_id WHERE u.email = ?";
+        PreparedStatement pstmt = conn.prepareStatement(query);
+        pstmt.setString(1, email);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            UserDetail user = new UserDetail();
+            user.setDetailId(rs.getInt("detail_id"));
+            user.setUserId(rs.getInt("user_id"));
+            user.setFirstName(rs.getString("firstName"));
+            user.setLastName(rs.getString("lastName"));
+            user.setEmail(rs.getString("email"));
+            user.setPhoneNumber(rs.getString("phoneNumber"));
+            user.setProfileImageUrl(rs.getString("profileImageUrl"));
+            return user;
+        }
+        return null;
+    }
 
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
