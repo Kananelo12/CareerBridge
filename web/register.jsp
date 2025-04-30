@@ -76,7 +76,6 @@
 
         <div class="container">
             <div class="section-wrapper">
-                <!-- Left Section (Form) -->
                 <div class="left-section">
                     <div class="logo">
                         <img src="./assets/images/logo-mark.png" alt="App Logo" />

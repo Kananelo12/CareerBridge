@@ -42,7 +42,7 @@
         <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="./assets/images/favicon/favicon-16x16.png">
         <link rel="manifest" href="./assets/images/favicon/site.webmanifest">
-        
+
         <style>
             div.eapps-widget {
                 position: static !important;
@@ -106,35 +106,25 @@
                             </div>
                             <div class="search-forms" id="search-forms">
                                 <!-- Internship Form -->
-                                <form action="" method="POST" id="internship-form">
-                                    <input type="hidden" name="form-type" value="internship" />
+                                <form action="InternshipServlet" method="GET" id="internship-form">
+                                    <input type="hidden" name="form-type" value="internshipForm" />
                                     <div class="form-group">
                                         <label for="location">Location</label>
                                         <input type="text" name="location" id="location" placeholder="Maseru..." class="form-control" />
                                     </div>
                                     <div class="form-group">
-                                        <label for="propertyType">Type</label>
+                                        <label for="category">Category</label>
                                         <div class="select-wrapper">
-                                            <select name="propertyType" id="propertyType" class="custom-select form-control">
-                                                <option value="Home">Home</option>
-                                                <option value="Hotel">Hotel</option>
-                                                <option value="Apartment">Apartment</option>
-                                                <option value="Guesthouse">Guesthouse</option>
-                                                <option value="Resort">Resort</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="buyPrice">Price Range</label>
-                                        <div class="select-wrapper">
-                                            <select name="buyPrice" id="buyPrice" class="custom-select form-control">
-                                                <option value="1000,2000">R1000 - R2000</option>
-                                                <option value="2000,5000">R2000 - R5000</option>
-                                                <option value="5000,10000">R5000 - R10000</option>
-                                                <option value="10000,20000">R10000 - R20000</option>
-                                                <option value="20000,50000">R20000 - R50000</option>
-                                                <option value="50000,100000">R50000 - R100000</option>
-                                                <option value="100000,200000">R100000 - R200000</option>
+                                            <select name="category" id="category" class="custom-select form-control">
+                                                <option value="">Select category</option>
+                                                <option value="engineering">Engineering</option>
+                                                <option value="information technology">Information Technology</option>
+                                                <option value="marketing">Marketing</option>
+                                                <option value="finance">Finance</option>
+                                                <option value="human resources">Human Resources</option>
+                                                <option value="design">Design</option>
+                                                <option value="sales">Sales</option>
+                                                <option value="operations">Operations</option>
                                             </select>
                                         </div>
                                     </div>
@@ -144,45 +134,46 @@
                                 </form>
 
                                 <!-- Job Form -->
-                                <form action="" method="POST" id="job-form" class="hidden">
+                                <form action="" method="GET" id="job-form" class="hidden">
                                     <input type="hidden" name="form-type" value="job" />
                                     <div class="form-group">
                                         <label for="rentLocation">Location</label>
                                         <input type="text" name="rentLocation" id="rentLocation" placeholder="Maseru..." class="form-control" />
                                     </div>
                                     <div class="form-group">
-                                        <label for="rentPropertyType">Property Type</label>
+                                        <label for="jobCategory">Category</label>
                                         <div class="select-wrapper">
-                                            <select name="rentPropertyType" id="rentPropertyType" class="custom-select form-control">
-                                                <option value="Apartment">Apartment</option>
-                                                <option value="Guesthouse">Guesthouse</option>
-                                                <option value="Home">Home</option>
-                                                <option value="Resort">Resort</option>
-                                                <option value="Hotel">Hotel</option>
+                                            <select name="jobCategory" id="jobCategory" class="custom-select form-control">
+                                                <option value="">Select category</option>
+                                                <option value="engineering">Engineering</option>
+                                                <option value="information technology">Information Technology</option>
+                                                <option value="marketing">Marketing</option>
+                                                <option value="finance">Finance</option>
+                                                <option value="human resources">Human Resources</option>
+                                                <option value="design">Design</option>
+                                                <option value="sales">Sales</option>
+                                                <option value="operations">Operations</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="rentPrice">Rent Range</label>
+                                        <label for="stipend">Pay Range</label>
                                         <div class="select-wrapper">
-                                            <select name="rentPrice" id="rentPrice" class="custom-select form-control">
+                                            <select name="stipend" id="stipend" class="custom-select form-control">
                                                 <option value="500,1000">R500 - R1000</option>
                                                 <option value="1000,2000">R1000 - R2000</option>
                                                 <option value="2000,3000">R2000 - R3000</option>
                                                 <option value="3000,5000">R3000 - R5000</option>
-                                                <option value="5000,7000">R5000 - R7000</option>
-                                                <option value="7000,10000">R7000 - R10000</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="leaseDuration">Lease Duration</label>
+                                        <label for="Duration">Duration</label>
                                         <div class="select-wrapper">
-                                            <select name="leaseDuration" id="leaseDuration" class="custom-select form-control">
+                                            <select name="Duration" id="Duration" class="custom-select form-control">
+                                                <option value="3">3 months</option>
                                                 <option value="6">6 months</option>
                                                 <option value="12">12 months</option>
-                                                <option value="18">18 months</option>
-                                                <option value="24">24 months</option>
                                             </select>
                                         </div>
                                     </div>
@@ -229,7 +220,6 @@
                         </div>
                     </div>
                     <div class="modal__body">
-                        <!-- Hidden field: internship_id (should be set dynamically, e.g., via JS or server-side) -->
                         <input type="hidden" name="internship_id" id="internship_id" value="${internshipCard.internshipId}" />
 
                         <div class="input-group">
@@ -252,7 +242,7 @@
         <!-- Elfsight AI Chatbot | Career Bridge AI Chatbot -->
         <script src="https://static.elfsight.com/platform/platform.js" async></script>
         <div class="elfsight-app-8e0e3896-bb4d-4a33-b9db-187b5c221750" data-elfsight-app-lazy></div>
-        
+
         <script src="./assets/js/utilities.js"></script>
         <script src="./assets/js/index.js"></script>
         <script>

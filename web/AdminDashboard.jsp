@@ -37,7 +37,7 @@
         }
     }
 
-    // Determine the current page from the request parameter
+    // Check the current page of the card items
     int currentPage = 1;
     String pageParam = request.getParameter("page");
     if (pageParam != null) {
@@ -54,7 +54,7 @@
     List<User> allUsers = userDAO.getAllUsers();
     request.setAttribute("allUsers", allUsers);
 
-    // retrieve only interns (students with internships).
+    // retrieve only interns
     List<User> internUsers = userDAO.getInternUsers();
     request.setAttribute("internUsers", internUsers);
 
@@ -131,10 +131,8 @@
             </div>
             <div class="dashboard-right-section">
 
-                <!-- Card stats -->
                 <section class="section" id="overviewSection">
                     <div class="card-w-100" style="padding:1.5rem; border-radius:12px;">
-                        <!-- header, welcome, etc. -->
 
                         <div class="card-container flex__between">
                             <div class="card-item">
@@ -146,7 +144,7 @@
                                         </c:when>
                                         <c:otherwise>
 
-                                            <span>EMPTY</span>
+                                            <span>0</span>
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
@@ -168,7 +166,6 @@
                             </div>
                         </div>
 
-                        <!-- Chart -->
                         <div class="card-container bento-grid">
                             <div class="card-group flex__between">
                                 <div class="card card-chart">
@@ -272,7 +269,6 @@
                             </table>
                         </div>
                         <div class="cards__pagination flex__between">
-                            <!-- Previous Button: Enabled only if currentPage > 1 -->
                             <c:choose>
                                 <c:when test="${currentPage > 1}">
                                     <a href="AdminDashboard.jsp?page=${currentPage - 1}" class="pagination__btn flex">
@@ -288,7 +284,6 @@
 
                             <span class="page-number">Page ${currentPage}</span>
 
-                            <!-- Next Button: If the number of records fetched equals the limit, assume more pages -->
                             <c:choose>
                                 <c:when test="${fn:length(internships) == limit}">
                                     <a href="AdminDashboard.jsp?page=${currentPage + 1}" class="pagination__btn flex">

@@ -415,8 +415,6 @@ select.custom-select option {
 }
 /*======= Footer Styles =======*/
 footer {
-/*    position: fixed;
-    bottom: 0;*/
     width: 100%;
     background: var(--bg-color-01);
     padding: 40px 7rem;
@@ -500,14 +498,11 @@ footer {
 
 
 /*======= Media Queries Styles =======*/
-
-/* Responsive Layout */
 @media (max-width: 1024px) {
     .property-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
-/* Medium screens: stack newsletter above links */
 @media (max-width: 992px) {
   footer {
     padding: 40px 4rem;
@@ -543,7 +538,7 @@ footer {
         position: relative;
     }
     .navbar::before {
-        content: "\f0c9"; /* Font Awesome hamburger icon */
+        content: "\f0c9";
         font-family: "Font Awesome 5 Free"; 
         font-weight: 900;
         font-size: 1.5rem;
@@ -554,8 +549,6 @@ footer {
         top: 50%;
         transform: translateY(-50%);
     }
-    
-    /* When the header has .mobile-active, show the navigation items */
     header.mobile-active .nav-items {
         position: absolute;
         top: 50%;
@@ -563,8 +556,6 @@ footer {
         transform: translate(-50%, -50%);
         display: flex;
     }
-    
-    /* Optionally, reduce padding on header for small screens */
     header {
         padding: 10px 20px;
         flex-wrap: wrap;

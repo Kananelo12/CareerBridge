@@ -76,7 +76,6 @@
         <servlet-name>FeedbackServlet</servlet-name>
         <url-pattern>/FeedbackServlet</url-pattern>
     </servlet-mapping>
-    <!-- Custom 404 Page-->
     <servlet-mapping>
         <servlet-name>EditUserServlet</servlet-name>
         <url-pattern>/EditUserServlet</url-pattern>
@@ -89,6 +88,7 @@
         <servlet-name>ReplyFeedbackServlet</servlet-name>
         <url-pattern>/ReplyFeedbackServlet</url-pattern>
     </servlet-mapping>
+    <!-- Custom 404 Page-->
     <error-page>
         <error-code>404</error-code>
         <location>/notFound.jsp</location>

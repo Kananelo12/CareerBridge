@@ -108,7 +108,6 @@
                 <h2 class="form-title" style="margin-bottom: 0.5rem;">Review Your Internship Experience</h2>
 
                 <form action="FeedbackServlet" method="POST" class="global-form">
-                    <!-- Pass the internship ID ans Student ID as hidden fields -->
                     <input type="hidden" name="internship_id" value="${internship.internshipId}" />
                     <input type="hidden" name="student_id" value="${studentId}" />
 

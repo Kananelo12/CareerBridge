@@ -36,10 +36,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const toggleBtn = document.querySelector('.sidebar__operations .icon');
     const toggleIcon = document.querySelector('.sidebar__operations .icon i');
 
-    if (toggleBtn) { // Make sure toggleBtn is not null
+    if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
             sidebarContainer.classList.toggle('collapsed');
-            // Optionally toggle an 'open' class for mobile
             sidebarContainer.classList.toggle('open');
 
             if (sidebarContainer.classList.contains('collapsed')) {
@@ -69,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Automatically remove "active" class after 10 seconds (10,000 milliseconds)
+    // Automatically remove "active" class after 10 seconds
     if (messageBox) {
         setTimeout(() => {
             messageBox.classList.remove("active");

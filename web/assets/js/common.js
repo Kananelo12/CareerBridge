@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Optionally, allow backspace to focus the previous input if empty
+        // Allow backspace to focus the previous input if empty
         input.addEventListener("keydown", function (e) {
             if (e.key === "Backspace" && this.value.length === 0 && index > 0) {
                 otpInputs[index - 1].focus();

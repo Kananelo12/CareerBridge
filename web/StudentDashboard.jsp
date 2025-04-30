@@ -69,6 +69,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Student Dashboard | Career Bridge</title>
 
         <!-- ======= CSS Styles ======= -->
@@ -245,7 +246,6 @@
                         </div>
                     </div>
                     <div class="modal__body">
-                        <!-- Hidden field: internship_id (should be set dynamically, e.g., via JS or server-side) -->
                         <input type="hidden" name="internship_id" id="internship_id" value="${internshipCard.internshipId}" />
 
                         <div class="input-group">

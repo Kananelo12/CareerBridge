@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     
-    // toggle forms
+    // Toggle forms
     const searchBtns = document.querySelectorAll(".search-btn");
     const internshipForm = document.getElementById("internship-form");
     const jobForm = document.getElementById("job-form");

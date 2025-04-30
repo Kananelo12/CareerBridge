@@ -88,7 +88,7 @@
                 </form>
             </div>
         </div>
-        <!-- ======= Registration Link ======= -->
+
         <div class="register-link">
             <a href="./register.jsp" class="register-btn">Register</a>
         </div>
@@ -120,7 +120,6 @@
 
         <div class="container">
             <div class="section-wrapper">
-                <!-- Left Section (Form) -->
                 <div class="left-section">
                     <div class="logo">
                         <img src="./assets/images/logo-mark.png" alt="App Logo" />

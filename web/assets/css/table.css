@@ -1,12 +1,11 @@
-/* Reset and base styles */
+/* ============= Reset / Base Styles ============= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-/* Container for the dashboard section */
+
 .container {
-  /*max-width: 1200px;*/
   margin: 0 auto;
   padding: 1rem;
   overflow: scroll;
@@ -16,29 +15,22 @@
 .container::-webkit-scrollbar {
     display: none;
 }
-
-/* Section heading */
 .table-title {
   margin-bottom: 1.5rem;
   font-size: 1.8rem;
 }
-
-/* Responsive table container */
 .responsive-table {
-  /*overflow-x: auto;*/
   margin-bottom: 1.5rem;
 }
-
-/* Table styling */
 table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 600px; /* Ensures a horizontal scroll on very narrow viewports */
+  min-width: 600px;
   border-radius: 12px;
   border: 1px solid var(--bg-focus-color);
 }
-/* Apply a border to the right of all but the last column */
+
 table th:not(:last-child),
 table td:not(:last-child) {
  /*border-right: 1px solid black;*/
@@ -111,7 +103,6 @@ tbody tr:hover {
 .badge-danger {
     background: #3E1716;
 }
-/* Action buttons styling */
 .actions {
   text-align: center;
   white-space: nowrap;
@@ -132,12 +123,10 @@ tbody tr:hover {
   cursor: pointer;
 }
 
-/* Specific styles for edit and delete actions */
 .edit-btn {
   color: var(--accent-color-01);
   border-color: var(--accent-color-01);
 }
-
 .edit-btn:hover {
   background-color: var(--accent-color-02);
   color: #fff;
@@ -147,13 +136,13 @@ tbody tr:hover {
   border-color: #ff4c4c;
   color: #ff4c4c;
 }
-
 .delete-btn:hover {
   background-color: #ff4c4c;
   color: #fff;
 }
 
-/* Responsive adjustments */
+
+/* ============= Media Queries ============= */
 @media (max-width: 600px) {
   th, td {
     padding: 0.5rem 0.75rem;

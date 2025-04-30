@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import java.io.IOException;
@@ -54,7 +50,6 @@ public class AdminDashboardServlet extends HttpServlet {
             session.setAttribute("totalInternships", svc.getTotalInternships());
             session.setAttribute("totalApplications", svc.getTotalApplications());
             session.setAttribute("pendingApplications", svc.getPendingApplications());
-            System.out.println("IS SESSION WORKING");
 
             // last 7 days
             List<DayCount> series = svc.getDailyApplicationCounts(7);

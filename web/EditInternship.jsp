@@ -33,7 +33,8 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Edit Internships Page</title>
 
         <!-- ======= CSS Styles ======= -->
         <link rel="stylesheet" href="./assets/css/all.min.css" />
@@ -91,7 +92,6 @@
                 <h2 class="form-title">Edit Internship</h2>
 
                 <form action="EditInternshipServlet" method="POST" class="global-form">
-                    <!-- Pass the internship ID as hidden field -->
                     <input type="hidden" name="internshipId" value="${internship.internshipId}" />
 
                     <div class="input-group">

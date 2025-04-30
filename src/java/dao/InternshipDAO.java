@@ -190,5 +190,27 @@ public class InternshipDAO {
         }
         return internships;
     }
+    
+    public List<Internship> searchInternships(String location, String category) throws SQLException {
+        List<Internship> internships = new ArrayList<>();
+        String sql = """
+            SELECT i.*, c.company_name, c.logo_url
+              FROM internship i
+              JOIN company c ON i.company_id = c.company_id
+             WHERE LOWER(i.location) LIKE ?
+               AND i.category = ?
+             ORDER BY i.posted_date DESC
+            """;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + location.trim().toLowerCase() + "%");
+            stmt.setString(2, category);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    internships.add(mapRowToInternship(rs));
+                }
+            }
+        }
+        return internships;
+    }
 
 }

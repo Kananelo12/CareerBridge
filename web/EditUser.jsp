@@ -92,7 +92,6 @@
                 <h2 class="form-title">Edit User Information</h2>
 
                 <form action="EditUserServlet" method="POST" class="global-form">
-                    <!-- Pass the internship ID as hidden field -->
                     <input type="hidden" name="studentId" value="${allUsers.userId}" />
 
                     <div class="input-group-flex">

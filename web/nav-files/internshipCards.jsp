@@ -16,7 +16,7 @@
 <%
     Connection con = ConnectionFile.getConn();
 
-    // Determine the current page from the request parameter
+    // Check the current page of the card items
     int currentPage = 1;
     String pageParam = request.getParameter("page");
     if (pageParam != null) {
@@ -27,7 +27,6 @@
         }
     }
 
-    // Offset the list from 0 and limit them to 6 items
     int limit = 6;
     int offset = (currentPage - 1) * limit;
 
@@ -94,10 +93,9 @@
         <%
             String referer = request.getHeader("Referer");
         %>
-        <!-- Previous Button: Enabled only if currentPage > 1 -->
         <c:choose>
             <c:when test="${currentPage > 1}">
-                <a href="${referer}?page=${currentPage - 1}" class="pagination__btn flex">
+                <a href="${referer}?page=${currentPage - 1}#internships" class="pagination__btn flex">
                     <i class="fas fa-arrow-left"></i>
                 </a>
             </c:when>
@@ -110,10 +108,9 @@
 
         <span class="page-number">Page ${currentPage}</span>
 
-        <!-- Next Button: If the number of records fetched equals the limit, assume more pages -->
         <c:choose>
             <c:when test="${fn:length(internshipCards) == limit}">
-                <a href="${referer}?page=${currentPage + 1}" class="pagination__btn flex">
+                <a href="${referer}?page=${currentPage + 1}#internships" class="pagination__btn flex">
                     <i class="fas fa-arrow-right"></i>
                 </a>
             </c:when>

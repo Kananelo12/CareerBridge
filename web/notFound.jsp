@@ -39,10 +39,9 @@
     </head>
     <body class="<%=savedTheme%>">
         <div class="main-container">
-            <!-- Header -->
+
             <%@include file="./nav-files/header.jsp" %>
 
-            <!-- Main -->
             <main id="main">
                 <div class="max-width">
                     <section class="section d-grid">
@@ -61,7 +60,6 @@
                     </section>
                 </div>
             </main>
-            <!-- End of Main -->
         </div>
 
         <script src="./assets/js/utilities.js"></script>

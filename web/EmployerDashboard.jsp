@@ -395,7 +395,6 @@
                         <h2 class="form-title" style="margin-bottom: 2rem;">Edit Company Profile</h2>
 
                         <form action="EditCompanyServlet" method="POST" class="global-form">
-                            <!-- Hidden field for company_id -->
                             <input type="hidden" name="companyId" value="${company.companyId}" />
 
                             <div class="input-group">

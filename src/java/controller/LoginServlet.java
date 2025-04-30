@@ -126,7 +126,6 @@ public class LoginServlet extends HttpServlet {
                 throw new ServletException("Error sending OTP email", ex);
             }
 
-            // Store OTP context in session and prompt user
             session.setAttribute("generatedOtp", otp);
             session.setAttribute("adminEmail", adminEmail);
             request.setAttribute("success", "OTP has been sent to " + adminEmail);
