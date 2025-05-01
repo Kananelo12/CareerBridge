@@ -11,7 +11,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import model.DayCount;
+import model.User;
 import service.DashboardService;
+import service.UserService;
+import utils.BCrypt;
 import utils.ConnectionFile;
 
 /**
@@ -42,6 +45,51 @@ public class AdminDashboardServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if (conn == null) {
+            request.setAttribute("error", "Database connection failed. Try again!");
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+            return;
+        }
+        
+        String action = request.getParameter("action");
+        if (action != null && "addAdmin".equalsIgnoreCase(action)) {
+            String email = request.getParameter("email");
+            String pwd = request.getParameter("password");
+            String confirm = request.getParameter("confirmPassword");
+            
+            System.out.println("REACHED PARAMS");
+
+            // Basic validation
+            if (email == null || pwd == null || confirm == null || !pwd.equals(confirm) || pwd.length() < 8) {
+                System.out.println("REACHED NULL");
+                request.setAttribute("error", "Please provide a valid email and matching passwords (min 8 chars).");
+                request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
+                return;
+            }
+            
+            try {
+                System.out.println("REACHED TRY CATCH");
+                String hashed = BCrypt.hashpw(pwd, BCrypt.gensalt());
+                User newAdmin = new User();
+                newAdmin.setEmail(email);
+                newAdmin.setPassword(hashed);
+                newAdmin.setRoleId(1);
+
+                UserService svc = new UserService(conn);
+                svc.insertUser(newAdmin);
+
+                System.out.println("REACHED INSERT");
+                System.out.println("USER MODEL: " + newAdmin);
+                request.setAttribute("success", "New admin created successfully.");
+                request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
+                return;
+            } catch (SQLException ex) {
+                request.setAttribute("error", "Failed to create admin: " + ex.getMessage());
+                request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
+                return;
+            }
+        }
+        
         try {
             var svc = new DashboardService(conn);
 

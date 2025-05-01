@@ -337,11 +337,49 @@
                     </div>
                 </section>
 
+                <section class="section hidden" id="settingsSection">
+                    <div class="card-dark card-w-100" style="margin: 0 1rem 1.5rem 1rem;">
+                        <a href="#" class="internship-btn" id="openAddAdminModal">Add Admin User</a>
+                    </div>
+                </section>
+
             </div>
         </main>
 
+        <!--=======Add Admin Modal =======-->
+        <div class="modal__overlay flex" id="addAdminModal">
+            <div class="modal addAdmin__modal" style="max-width: 600px;">
+                <form action="AdminDashboard" method="POST" class="global-form">
+                    <div class="modal__title flex" style="margin-bottom: 1.3rem;">
+                        <h3 class="form-title">Add New Admin</h3>
+                        <div class="close__modal__btn flex">
+                            <i class="fas fa-close"></i>
+                        </div>
+                    </div>
+
+                    <div class="modal__body">
+                        <input type="hidden" name="action" value="addAdmin" />
+                        <div class="input-group">
+                            <label for="adminEmail" class="form-label">Email</label>
+                            <input type="email" id="adminEmail" name="email" class="form-control" required />
+                        </div>
+                        <div class="input-group">
+                            <label for="adminPassword" class="form-label">Password</label>
+                            <input type="password" id="adminPassword" name="password" class="form-control" required />
+                        </div>
+                        <div class="input-group">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required />
+                        </div>
+
+                        <button type="submit" class="globalBtn">Create Admin</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
         <script>
-            // Check if a saved theme exists in localStorage
             const savedTheme = localStorage.getItem("saved-theme");
             if (savedTheme) {
                 document.body.classList[savedTheme === "dark" ? "add" : "remove"]("dark-theme");
@@ -354,9 +392,19 @@
                     this.classList.add("active");
                 });
             });
+
+            const openModalBtn = document.getElementById('openAddAdminModal');
+            const cancelBtn = document.getElementById('cancelAddAdmin');
+            const modal = document.getElementById('addAdminModal');
+            openModalBtn.addEventListener('click', e => {
+                e.preventDefault();
+                modal.classList.add('active');
+            });
+            cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
         </script>
         <script src="./assets/js/utilities.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <script>
             const raw = [
             <c:forEach var="dc" items="${dailyAppCounts}" varStatus="st">

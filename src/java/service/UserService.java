@@ -62,6 +62,10 @@ public class UserService {
             conn.setAutoCommit(true);
         }
     }
+    
+    public int insertUser(User user) throws SQLException {
+        return userDAO.insertUser(user);
+    }
 
     // Return a User object if the email and password are valid, otherwise returns null.
     public User login(String email, String password) throws SQLException {

@@ -56,7 +56,7 @@
                     <span class="nav__text">Reviews</span>
                 </a>
             </li>
-            <li class="nav__item">
+            <li class="nav__item" id="settings">
                 <a href="#" class="nav__link">
                     <span class="nav__icon"><i class="fas fa-gear"></i></span>
                     <span class="nav__text">Settings</span>
